@@ -781,9 +781,10 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     alignSelf: "flex-start",
     gap: 4,
+    zIndex: 2,
   },
   balanceBadgeText: { fontFamily: font.bold, fontSize: 10, color: "#000" },
-  chartBg: { position: "absolute", bottom: 0, right: 0 },
+  chartBg: { position: "absolute", bottom: 0, right: 0, zIndex: 1 },
   statsWrap: { gap: 10, marginBottom: 24 },
   statCard: {
     flexDirection: "row",
