@@ -11,6 +11,7 @@ import {
 import { font, radius } from "../constants/theme";
 import { useFinance } from "../context/FinanceContext";
 import { useTheme } from "../context/ThemeContext";
+import { formatNumberInput, parseFormattedNumber } from "../utils/format";
 
 const fmt = (n: number) => "Rp " + n.toLocaleString("id-ID");
 
@@ -49,9 +50,9 @@ export default function SavingsScreen() {
     if (!name.trim() || !amount) return;
     addSaving(
       name.trim(),
-      parseFloat(amount),
+      parseFormattedNumber(amount),
       category,
-      target ? parseFloat(target) : undefined,
+      target ? parseFormattedNumber(target) : undefined,
     );
     setName("");
     setAmount("");
@@ -68,8 +69,8 @@ export default function SavingsScreen() {
   ) {
     setEditId(id);
     setEditName(name);
-    setEditAmount(String(amount));
-    setEditTarget(target ? String(target) : "");
+    setEditAmount(formatNumberInput(String(amount)));
+    setEditTarget(target ? formatNumberInput(String(target)) : "");
     setEditCategory(category);
     setEditVisible(true);
   }
@@ -79,9 +80,9 @@ export default function SavingsScreen() {
     editSaving(
       editId,
       editName.trim(),
-      parseFloat(editAmount),
+      parseFormattedNumber(editAmount),
       editCategory,
-      editTarget ? parseFloat(editTarget) : undefined,
+      editTarget ? parseFormattedNumber(editTarget) : undefined,
     );
     setEditVisible(false);
   }
@@ -169,7 +170,7 @@ export default function SavingsScreen() {
           placeholderTextColor={colors.muted}
           keyboardType="numeric"
           value={amount}
-          onChangeText={setAmount}
+          onChangeText={(text) => setAmount(formatNumberInput(text))}
         />
 
         <Text style={[styles.label, { color: colors.muted }]}>
@@ -188,7 +189,7 @@ export default function SavingsScreen() {
           placeholderTextColor={colors.muted}
           keyboardType="numeric"
           value={target}
-          onChangeText={setTarget}
+          onChangeText={(text) => setTarget(formatNumberInput(text))}
         />
 
         <TouchableOpacity
@@ -363,7 +364,7 @@ export default function SavingsScreen() {
                 },
               ]}
               value={editAmount}
-              onChangeText={setEditAmount}
+              onChangeText={(text) => setEditAmount(formatNumberInput(text))}
               keyboardType="numeric"
               placeholderTextColor={colors.muted}
             />
@@ -380,7 +381,7 @@ export default function SavingsScreen() {
                 },
               ]}
               value={editTarget}
-              onChangeText={setEditTarget}
+              onChangeText={(text) => setEditTarget(formatNumberInput(text))}
               keyboardType="numeric"
               placeholderTextColor={colors.muted}
               placeholder="0"

@@ -1,20 +1,21 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { font, radius } from "../constants/theme";
 import { useFinance } from "../context/FinanceContext";
 import { useTheme } from "../context/ThemeContext";
 import { useUser } from "../context/UserContext";
+import { formatNumberInput, parseFormattedNumber } from "../utils/format";
 
 export default function SetupScreen() {
   const { colors } = useTheme();
@@ -34,7 +35,7 @@ export default function SetupScreen() {
   function handleFinish() {
     if (!salaryInput) return;
     setUsername(nameInput.trim());
-    setSalary(parseFloat(salaryInput) || 0);
+    setSalary(parseFormattedNumber(salaryInput));
     setHasOnboarded(true);
     router.replace("/");
   }
@@ -45,7 +46,6 @@ export default function SetupScreen() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.content}>
-        {/* Step 1 — Username */}
         {step === 1 && (
           <View style={styles.stepWrap}>
             <Image
@@ -98,7 +98,6 @@ export default function SetupScreen() {
           </View>
         )}
 
-        {/* Step 2 — Salary */}
         {step === 2 && (
           <View style={styles.stepWrap}>
             <Image
@@ -130,7 +129,7 @@ export default function SetupScreen() {
                 placeholderTextColor={colors.muted}
                 keyboardType="numeric"
                 value={salaryInput}
-                onChangeText={setSalaryInput}
+                onChangeText={(text) => setSalaryInput(formatNumberInput(text))}
                 autoFocus
               />
             </View>

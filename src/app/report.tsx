@@ -16,6 +16,7 @@ import { font, radius } from "../constants/theme";
 import { useFinance } from "../context/FinanceContext";
 import { useTheme } from "../context/ThemeContext";
 import { useUser } from "../context/UserContext";
+import { formatNumberInput, parseFormattedNumber } from "../utils/format";
 
 const MONTHS = [
   "JAN",
@@ -198,13 +199,13 @@ export default function ReportScreen() {
   function openEditBudget(category: string) {
     setEditingCategory(category);
     setBudgetCategory(category);
-    setBudgetAmount(String(budgets[category]));
+    setBudgetAmount(formatNumberInput(String(budgets[category])));
     setBudgetModal(true);
   }
 
   function handleSaveBudget() {
     if (!budgetAmount) return;
-    setBudget(budgetCategory, parseFloat(budgetAmount));
+    setBudget(budgetCategory, parseFormattedNumber(budgetAmount));
     setBudgetModal(false);
   }
 
@@ -371,7 +372,6 @@ export default function ReportScreen() {
         </Text>
       </View>
 
-      {/* Budget Tracker */}
       <View style={[styles.chartCard, { backgroundColor: colors.surface }]}>
         <View style={styles.budgetHeader}>
           <Text
@@ -537,7 +537,6 @@ export default function ReportScreen() {
         )}
       </View>
 
-      {/* Modal Set/Edit Budget */}
       <Modal visible={budgetModal} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View
@@ -603,7 +602,7 @@ export default function ReportScreen() {
               placeholderTextColor={colors.muted}
               keyboardType="numeric"
               value={budgetAmount}
-              onChangeText={setBudgetAmount}
+              onChangeText={(text) => setBudgetAmount(formatNumberInput(text))}
             />
 
             <TouchableOpacity

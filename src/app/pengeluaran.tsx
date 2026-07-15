@@ -11,6 +11,7 @@ import {
 import { font, radius } from "../constants/theme";
 import { useFinance } from "../context/FinanceContext";
 import { useTheme } from "../context/ThemeContext";
+import { formatNumberInput, parseFormattedNumber } from "../utils/format";
 
 const fmt = (n: number) => "Rp " + n.toLocaleString("id-ID");
 
@@ -45,7 +46,7 @@ export default function ExpenseScreen() {
 
   function handleAdd() {
     if (!name.trim() || !amount) return;
-    addExpense(name.trim(), parseFloat(amount), category);
+    addExpense(name.trim(), parseFormattedNumber(amount), category);
     setName("");
     setAmount("");
     setCategory(CATEGORIES[0]);
@@ -59,14 +60,19 @@ export default function ExpenseScreen() {
   ) {
     setEditId(id);
     setEditName(name);
-    setEditAmount(String(amount));
+    setEditAmount(formatNumberInput(String(amount)));
     setEditCategory(category);
     setEditVisible(true);
   }
 
   function handleEdit() {
     if (!editName.trim() || !editAmount || editId === null) return;
-    editExpense(editId, editName.trim(), parseFloat(editAmount), editCategory);
+    editExpense(
+      editId,
+      editName.trim(),
+      parseFormattedNumber(editAmount),
+      editCategory,
+    );
     setEditVisible(false);
   }
 
@@ -153,7 +159,7 @@ export default function ExpenseScreen() {
           placeholderTextColor={colors.muted}
           keyboardType="numeric"
           value={amount}
-          onChangeText={setAmount}
+          onChangeText={(text) => setAmount(formatNumberInput(text))}
         />
 
         <TouchableOpacity
@@ -286,7 +292,7 @@ export default function ExpenseScreen() {
                 },
               ]}
               value={editAmount}
-              onChangeText={setEditAmount}
+              onChangeText={(text) => setEditAmount(formatNumberInput(text))}
               keyboardType="numeric"
               placeholderTextColor={colors.muted}
             />

@@ -16,6 +16,7 @@ import { font, radius } from "../constants/theme";
 import { useFinance } from "../context/FinanceContext";
 import { useTheme } from "../context/ThemeContext";
 import { useUser } from "../context/UserContext";
+import { formatNumberInput, parseFormattedNumber } from "../utils/format";
 
 const MONTHS = [
   "JAN",
@@ -154,12 +155,12 @@ export default function HomeScreen() {
   const [savCategory, setSavCategory] = useState(SAVINGS_CATEGORIES[0]);
   const [savTarget, setSavTarget] = useState("");
   const [incomeInput, setIncomeInput] = useState(
-    salary > 0 ? String(salary) : "",
+    salary > 0 ? formatNumberInput(String(salary)) : "",
   );
 
   function handleAddExpense() {
     if (!expName.trim() || !expAmount) return;
-    addExpense(expName.trim(), parseFloat(expAmount), expCategory);
+    addExpense(expName.trim(), parseFormattedNumber(expAmount), expCategory);
     setExpName("");
     setExpAmount("");
     setExpCategory(EXPENSE_CATEGORIES[0]);
@@ -170,9 +171,9 @@ export default function HomeScreen() {
     if (!savName.trim() || !savAmount) return;
     addSaving(
       savName.trim(),
-      parseFloat(savAmount),
+      parseFormattedNumber(savAmount),
       savCategory,
-      savTarget ? parseFloat(savTarget) : undefined,
+      savTarget ? parseFormattedNumber(savTarget) : undefined,
     );
     setSavName("");
     setSavAmount("");
@@ -507,7 +508,7 @@ export default function HomeScreen() {
               placeholderTextColor={colors.muted}
               keyboardType="numeric"
               value={expAmount}
-              onChangeText={setExpAmount}
+              onChangeText={(text) => setExpAmount(formatNumberInput(text))}
             />
             <TouchableOpacity
               style={[styles.modalBtn, { backgroundColor: colors.danger }]}
@@ -601,7 +602,7 @@ export default function HomeScreen() {
               placeholderTextColor={colors.muted}
               keyboardType="numeric"
               value={savAmount}
-              onChangeText={setSavAmount}
+              onChangeText={(text) => setSavAmount(formatNumberInput(text))}
             />
             <Text style={[styles.modalLabel, { color: colors.muted }]}>
               TARGET (OPTIONAL)
@@ -619,7 +620,7 @@ export default function HomeScreen() {
               placeholderTextColor={colors.muted}
               keyboardType="numeric"
               value={savTarget}
-              onChangeText={setSavTarget}
+              onChangeText={(text) => setSavTarget(formatNumberInput(text))}
             />
             <TouchableOpacity
               style={[styles.modalBtn, { backgroundColor: colors.saving }]}
@@ -673,13 +674,13 @@ export default function HomeScreen() {
                 placeholderTextColor={colors.muted}
                 keyboardType="numeric"
                 value={incomeInput}
-                onChangeText={setIncomeInput}
+                onChangeText={(text) => setIncomeInput(formatNumberInput(text))}
               />
             </View>
             <TouchableOpacity
               style={[styles.modalBtn, { backgroundColor: colors.accent }]}
               onPress={() => {
-                setSalary(parseFloat(incomeInput) || 0);
+                setSalary(parseFormattedNumber(incomeInput));
                 setIncomeModal(false);
               }}
             >

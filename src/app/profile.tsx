@@ -2,21 +2,22 @@ import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState } from "react";
 import {
-    Alert,
-    Image,
-    Modal,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { font, radius } from "../constants/theme";
 import { useFinance } from "../context/FinanceContext";
 import { useTheme } from "../context/ThemeContext";
 import { useUser } from "../context/UserContext";
+import { formatNumberInput, parseFormattedNumber } from "../utils/format";
 
 const fmt = (n: number) => "Rp " + n.toLocaleString("id-ID");
 
@@ -29,7 +30,9 @@ export default function ProfileScreen() {
   const [editNameVisible, setEditNameVisible] = useState(false);
   const [editSalaryVisible, setEditSalaryVisible] = useState(false);
   const [nameInput, setNameInput] = useState(username);
-  const [salaryInput, setSalaryInput] = useState(String(salary));
+  const [salaryInput, setSalaryInput] = useState(
+    salary > 0 ? formatNumberInput(String(salary)) : "",
+  );
 
   function handleSaveName() {
     if (!nameInput.trim()) return;
@@ -38,7 +41,7 @@ export default function ProfileScreen() {
   }
 
   function handleSaveSalary() {
-    setSalary(parseFloat(salaryInput) || 0);
+    setSalary(parseFormattedNumber(salaryInput));
     setEditSalaryVisible(false);
   }
 
@@ -153,7 +156,7 @@ export default function ProfileScreen() {
         <TouchableOpacity
           style={[styles.settingRow, { borderBottomColor: colors.border }]}
           onPress={() => {
-            setSalaryInput(String(salary));
+            setSalaryInput(formatNumberInput(String(salary)));
             setEditSalaryVisible(true);
           }}
         >
@@ -294,7 +297,7 @@ export default function ProfileScreen() {
                 },
               ]}
               value={salaryInput}
-              onChangeText={setSalaryInput}
+              onChangeText={(text) => setSalaryInput(formatNumberInput(text))}
               keyboardType="numeric"
               placeholderTextColor={colors.muted}
               autoFocus
