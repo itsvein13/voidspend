@@ -10,8 +10,8 @@ const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&";
 const TARGET = "veingh0st";
 
 export default function SplashScreenCustom({ onFinish }: Props) {
-  const titleOpacity = useRef(new Animated.Value(0)).current;
-  const titleY = useRef(new Animated.Value(30)).current;
+  const logoOpacity = useRef(new Animated.Value(0)).current;
+  const logoScale = useRef(new Animated.Value(0.85)).current;
   const taglineOpacity = useRef(new Animated.Value(0)).current;
   const createdByOpacity = useRef(new Animated.Value(0)).current;
   const [glitchText, setGlitchText] = useState(TARGET);
@@ -19,13 +19,13 @@ export default function SplashScreenCustom({ onFinish }: Props) {
   useEffect(() => {
     Animated.sequence([
       Animated.parallel([
-        Animated.timing(titleOpacity, {
+        Animated.timing(logoOpacity, {
           toValue: 1,
           duration: 800,
           useNativeDriver: true,
         }),
-        Animated.timing(titleY, {
-          toValue: 0,
+        Animated.timing(logoScale, {
+          toValue: 1,
           duration: 800,
           useNativeDriver: true,
         }),
@@ -46,7 +46,6 @@ export default function SplashScreenCustom({ onFinish }: Props) {
     ]).start(() => onFinish());
   }, []);
 
-  // Jalanin glitch effect setelah createdBy muncul
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
 
@@ -72,7 +71,6 @@ export default function SplashScreenCustom({ onFinish }: Props) {
       }, 50);
     };
 
-    // Delay sesuai animasi sebelumnya
     timeout = setTimeout(startGlitch, 1600);
 
     return () => clearTimeout(timeout);
@@ -81,14 +79,14 @@ export default function SplashScreenCustom({ onFinish }: Props) {
   return (
     <View style={styles.container}>
       <View style={styles.center}>
-        <Animated.Text
+        <Animated.Image
+          source={require("../assets/logo.png")}
           style={[
-            styles.title,
-            { opacity: titleOpacity, transform: [{ translateY: titleY }] },
+            styles.logo,
+            { opacity: logoOpacity, transform: [{ scale: logoScale }] },
           ]}
-        >
-          VOIDSPEND
-        </Animated.Text>
+          resizeMode="contain"
+        />
         <Animated.Text style={[styles.tagline, { opacity: taglineOpacity }]}>
           track the drain.
         </Animated.Text>
@@ -114,18 +112,16 @@ const styles = StyleSheet.create({
   center: {
     alignItems: "center",
   },
-  title: {
-    fontFamily: font.black,
-    fontSize: 36,
-    color: colors.text,
-    letterSpacing: 6,
+  logo: {
+    width: 260,
+    height: 65,
   },
   tagline: {
     fontFamily: font.regular,
     fontSize: 13,
     color: colors.muted,
     letterSpacing: 3,
-    marginTop: 10,
+    marginTop: 14,
   },
   createdByWrap: {
     position: "absolute",
