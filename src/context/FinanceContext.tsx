@@ -52,6 +52,7 @@ type FinanceContextType = {
   setBudget: (category: string, limit: number) => void;
   deleteBudget: (category: string) => void;
   expenseByCategory: Record<string, number>;
+  resetData: () => void;
 };
 
 const FinanceContext = createContext<FinanceContextType | null>(null);
@@ -218,6 +219,13 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     });
   }
 
+  async function resetData() {
+    setExpenses([]);
+    setSavings([]);
+    setBudgets({});
+    await AsyncStorage.multiRemove(["expenses", "savings", "budgets"]);
+  }
+
   return (
     <FinanceContext.Provider
       value={{
@@ -243,6 +251,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         setBudget,
         deleteBudget,
         expenseByCategory,
+        resetData,
       }}
     >
       {children}

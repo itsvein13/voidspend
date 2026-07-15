@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState } from "react";
 import {
   Alert,
@@ -24,7 +23,8 @@ const fmt = (n: number) => "Rp " + n.toLocaleString("id-ID");
 export default function ProfileScreen() {
   const { colors, theme, toggleTheme } = useTheme();
   const { username, setUsername } = useUser();
-  const { salary, setSalary, remaining, expenses, savings } = useFinance();
+  const { salary, setSalary, remaining, expenses, savings, resetData } =
+    useFinance();
   const insets = useSafeAreaInsets();
 
   const [editNameVisible, setEditNameVisible] = useState(false);
@@ -54,8 +54,8 @@ export default function ProfileScreen() {
         {
           text: "Reset",
           style: "destructive",
-          onPress: async () => {
-            await AsyncStorage.multiRemove(["expenses", "savings"]);
+          onPress: () => {
+            resetData();
             Alert.alert("Done", "All data has been reset.");
           },
         },

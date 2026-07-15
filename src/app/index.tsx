@@ -62,6 +62,18 @@ function getMascot(remaining: number, salary: number) {
   return require("../assets/mascot/eepy2.png");
 }
 
+function getGreetingMessage(remaining: number, salary: number): string {
+  if (salary === 0) return "Let's track your expenses\nand build your future.";
+  const pct = remaining / salary;
+  if (pct >= 0.7)
+    return "You're doing great!\nKeep saving and spending wisely.";
+  if (pct >= 0.5)
+    return "Halfway through the month,\nyour budget still looks solid.";
+  if (pct >= 0.3) return "Getting tighter,\nstay mindful with your spending.";
+  if (pct >= 0.1) return "Careful now,\nyour balance is running low.";
+  return "Whoa, you're almost out!\nTime to slow down on spending.";
+}
+
 function MiniChart({ expenses, savings }: { expenses: any[]; savings: any[] }) {
   const width = 240;
   const height = 80;
@@ -143,6 +155,7 @@ export default function HomeScreen() {
   const { username } = useUser();
   const insets = useSafeAreaInsets();
   const mascot = getMascot(remaining, salary);
+  const greetingMessage = getGreetingMessage(remaining, salary);
 
   const [expenseModal, setExpenseModal] = useState(false);
   const [savingsModal, setSavingsModal] = useState(false);
@@ -234,7 +247,7 @@ export default function HomeScreen() {
             Hello, {username || "User"}!
           </Text>
           <Text style={[styles.greetingDesc, { color: colors.muted }]}>
-            Let's track your expenses{"\n"}and build your future.
+            {greetingMessage}
           </Text>
         </View>
         <Image source={mascot} style={styles.mascotImg} resizeMode="contain" />
