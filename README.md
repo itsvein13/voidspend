@@ -1,56 +1,80 @@
-# Welcome to your Expo app 👋
+# VOIDSPEND
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+_track the drain._
 
-## Get started
+A minimalist personal finance tracker built for people who want a fast, no-nonsense way to see where their salary goes each month — without setting up an account, connecting a bank, or trusting a server with their financial data.
 
-1. Install dependencies
+![Platform](https://img.shields.io/badge/platform-Android-3DDC84)
+![Built with Expo](https://img.shields.io/badge/built%20with-Expo-000020)
+![Language](https://img.shields.io/badge/language-TypeScript-3178C6)
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## About
 
-   ```bash
-   npx expo start
-   ```
+VOIDSPEND is a mobile finance app built around one idea: track your monthly salary, log what you spend and save, and always know exactly how much is left — all stored locally on your device, no login required.
 
-In the output, you'll find options to open the app in a
+The app pairs a dark, editorial visual identity with a custom illustrated mascot that reacts to your spending habits, turning a routine budgeting task into something a little more alive.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Features
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **Onboarding flow** — first-time setup with username and monthly salary
+- **Home dashboard** — real-time balance, income/expense/savings breakdown, and a live mini chart
+- **Reactive mascot** — expression changes based on how much of your salary is left
+- **Expense & savings tracking** — categorized entries with custom names and amounts
+- **Savings targets** — set a goal per savings item and track progress visually
+- **Budget limits** — monthly cap per expense category, with over-budget warnings
+- **Monthly history** — filterable transaction log with month navigation
+- **Reports** — category breakdowns via donut charts, plus a shareable monthly summary
+- **Dark / light theme** — full toggle, persisted across sessions
+- **Offline-first** — all data stored locally with AsyncStorage; nothing leaves the device
 
-## Get a fresh project
+## Tech Stack
 
-When you're ready, run:
+- [React Native](https://reactnative.dev/) + [Expo](https://expo.dev/)
+- [Expo Router](https://docs.expo.dev/router/introduction/) — file-based navigation
+- TypeScript
+- [react-native-svg](https://github.com/software-mansion/react-native-svg) — custom charts, no chart library dependency
+- `@react-native-async-storage/async-storage` — local persistence
+- Space Grotesk (via `@expo-google-fonts`)
+
+## Screens
+
+| Screen     | Description                                       |
+| ---------- | ------------------------------------------------- |
+| Splash     | Animated logo intro with a glitch-text credit     |
+| Onboarding | 3-slide intro to the app's core value props       |
+| Setup      | Username + monthly salary entry                   |
+| Home       | Dashboard with balance, quick actions, and mascot |
+| Expense    | Add / edit / delete categorized expenses          |
+| Savings    | Add / edit / delete savings with optional targets |
+| History    | Full transaction log with filtering               |
+| Report     | Charts, budget tracker, and shareable summary     |
+| Profile    | Account settings, theme toggle, data reset        |
+
+## Screenshots
+
+<!-- Add screenshots here — Home, Expense modal, Report, Profile -->
+
+## Getting Started
 
 ```bash
-npm run reset-project
+git clone https://github.com/itsvein13/voidspend.git
+cd voidspend
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Requires Node.js 20+ and Expo Go (or an Android/iOS emulator) to run in development.
 
-### Other setup steps
+## Design
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+VOIDSPEND's visual identity is built around a dark, minimal palette with a single lime-green accent, paired with an original mascot character designed for the app. Every screen follows the same restrained, editorial tone.
 
-## Learn more
+## Author
 
-To learn more about developing your project with Expo, look at the following resources:
+Built by **Rizki** — [@veingh0st](https://instagram.com/veingh0st)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+_VOIDSPEND is a personal project built to explore product design and mobile development end-to-end — from UI concept to a working Expo build._
