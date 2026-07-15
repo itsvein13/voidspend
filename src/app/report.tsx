@@ -1,16 +1,21 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Modal,
+  ScrollView,
+  Share,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
 import { font, radius } from "../constants/theme";
 import { useFinance } from "../context/FinanceContext";
 import { useTheme } from "../context/ThemeContext";
+import { useUser } from "../context/UserContext";
 
 const MONTHS = [
   "JAN",
@@ -26,7 +31,31 @@ const MONTHS = [
   "NOV",
   "DEC",
 ];
+const MONTHS_FULL = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 const fmt = (n: number) => "Rp " + n.toLocaleString("id-ID");
+
+const EXPENSE_CATEGORIES = [
+  "🍔 Food",
+  "🚗 Transport",
+  "🎮 Entertainment",
+  "🏥 Health",
+  "👗 Shopping",
+  "📱 Bills",
+  "📦 Others",
+];
 
 const CATEGORY_COLORS: Record<string, string> = {
   "🍔 Food": "#ff6b6b",
@@ -42,7 +71,6 @@ const CATEGORY_COLORS: Record<string, string> = {
   "📱 Gadget": "#cc5de8",
   "🎓 Education": "#6bcb77",
   "💼 Investment": "#c8f542",
-  // fallback for old data
   "🍔 Makan": "#ff6b6b",
   "🎮 Hiburan": "#6bcb77",
   "🏥 Kesehatan": "#4d96ff",
@@ -121,9 +149,19 @@ export default function ReportScreen() {
     selectedMonth,
     selectedYear,
     setSelectedMonth,
+    budgets,
+    setBudget,
+    deleteBudget,
+    expenseByCategory,
   } = useFinance();
   const { colors } = useTheme();
+  const { username } = useUser();
   const insets = useSafeAreaInsets();
+
+  const [budgetModal, setBudgetModal] = useState(false);
+  const [budgetCategory, setBudgetCategory] = useState(EXPENSE_CATEGORIES[0]);
+  const [budgetAmount, setBudgetAmount] = useState("");
+  const [editingCategory, setEditingCategory] = useState<string | null>(null);
 
   function prevMonth() {
     if (selectedMonth === 0) setSelectedMonth(11, selectedYear - 1);
@@ -134,14 +172,6 @@ export default function ReportScreen() {
     if (selectedMonth === 11) setSelectedMonth(0, selectedYear + 1);
     else setSelectedMonth(selectedMonth + 1, selectedYear);
   }
-
-  const expenseByCategory = filteredExpenses.reduce(
-    (acc, item) => {
-      acc[item.category] = (acc[item.category] || 0) + item.amount;
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
 
   const savingByCategory = filteredSavings.reduce(
     (acc, item) => {
@@ -158,6 +188,77 @@ export default function ReportScreen() {
     ([category, amount]) => ({ category, amount }),
   );
 
+  function openAddBudget() {
+    setEditingCategory(null);
+    setBudgetCategory(EXPENSE_CATEGORIES[0]);
+    setBudgetAmount("");
+    setBudgetModal(true);
+  }
+
+  function openEditBudget(category: string) {
+    setEditingCategory(category);
+    setBudgetCategory(category);
+    setBudgetAmount(String(budgets[category]));
+    setBudgetModal(true);
+  }
+
+  function handleSaveBudget() {
+    if (!budgetAmount) return;
+    setBudget(budgetCategory, parseFloat(budgetAmount));
+    setBudgetModal(false);
+  }
+
+  function handleDeleteBudget() {
+    if (editingCategory) deleteBudget(editingCategory);
+    setBudgetModal(false);
+  }
+
+  async function handleShare() {
+    const monthLabel = `${MONTHS_FULL[selectedMonth]} ${selectedYear}`;
+    const usedPct =
+      salary > 0
+        ? (((totalExpense + totalSaving) / salary) * 100).toFixed(1)
+        : "0";
+
+    let message = `📊 VOIDSPEND — ${monthLabel}\n`;
+    message += `${username ? `${username}'s ` : ""}Monthly Summary\n`;
+    message += `━━━━━━━━━━━━━━━━━━\n\n`;
+    message += `💰 Income: ${fmt(salary)}\n`;
+    message += `💸 Expense: ${fmt(totalExpense)}\n`;
+    message += `🏦 Savings: ${fmt(totalSaving)}\n`;
+    message += `━━━━━━━━━━━━━━━━━━\n`;
+    message += `${remaining >= 0 ? "✅" : "⚠️"} Remaining: ${fmt(remaining)}\n`;
+    message += `📈 ${usedPct}% of salary used\n`;
+
+    if (expenseData.length > 0) {
+      message += `\n📦 Expense Breakdown:\n`;
+      [...expenseData]
+        .sort((a, b) => b.amount - a.amount)
+        .forEach((item) => {
+          message += `  ${item.category}: ${fmt(item.amount)}\n`;
+        });
+    }
+
+    if (savingData.length > 0) {
+      message += `\n🎯 Savings Breakdown:\n`;
+      [...savingData]
+        .sort((a, b) => b.amount - a.amount)
+        .forEach((item) => {
+          message += `  ${item.category}: ${fmt(item.amount)}\n`;
+        });
+    }
+
+    message += `\n— tracked with VOIDSPEND 🖤`;
+
+    try {
+      await Share.share({ message });
+    } catch (err) {
+      // user cancelled or share failed silently
+    }
+  }
+
+  const budgetEntries = Object.entries(budgets);
+
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: colors.bg }}
@@ -167,10 +268,25 @@ export default function ReportScreen() {
       ]}
     >
       <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.text }]}>REPORT</Text>
-        <Text style={[styles.subtitle, { color: colors.muted }]}>
-          Your financial analytics
-        </Text>
+        <View>
+          <Text style={[styles.title, { color: colors.text }]}>REPORT</Text>
+          <Text style={[styles.subtitle, { color: colors.muted }]}>
+            Your financial analytics
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={[
+            styles.shareBtn,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
+          onPress={handleShare}
+        >
+          <Ionicons
+            name="share-social-outline"
+            size={20}
+            color={colors.accent}
+          />
+        </TouchableOpacity>
       </View>
 
       <View
@@ -255,6 +371,90 @@ export default function ReportScreen() {
         </Text>
       </View>
 
+      {/* Budget Tracker */}
+      <View style={[styles.chartCard, { backgroundColor: colors.surface }]}>
+        <View style={styles.budgetHeader}>
+          <Text
+            style={[styles.chartTitle, { color: colors.text, marginBottom: 0 }]}
+          >
+            Budget Tracker
+          </Text>
+          <TouchableOpacity
+            style={[styles.addBudgetBtn, { borderColor: colors.accent }]}
+            onPress={openAddBudget}
+          >
+            <Ionicons name="add" size={16} color={colors.accent} />
+            <Text style={[styles.addBudgetText, { color: colors.accent }]}>
+              SET BUDGET
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {budgetEntries.length === 0 ? (
+          <View style={styles.emptyChart}>
+            <Text style={styles.emptyIcon}>🎯</Text>
+            <Text style={[styles.emptyText, { color: colors.muted }]}>
+              No budget set yet
+            </Text>
+          </View>
+        ) : (
+          <View style={{ gap: 16, marginTop: 12 }}>
+            {budgetEntries.map(([category, limit]) => {
+              const spent = expenseByCategory[category] || 0;
+              const pct = limit > 0 ? Math.min((spent / limit) * 100, 100) : 0;
+              const isOver = spent > limit;
+              const isNear = !isOver && pct >= 80;
+              const barColor = isOver
+                ? colors.danger
+                : isNear
+                  ? "#ffd93d"
+                  : colors.accent;
+
+              return (
+                <TouchableOpacity
+                  key={category}
+                  onPress={() => openEditBudget(category)}
+                >
+                  <View style={styles.budgetRow}>
+                    <Text
+                      style={[styles.budgetCategory, { color: colors.text }]}
+                    >
+                      {category}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.budgetAmount,
+                        { color: isOver ? colors.danger : colors.muted },
+                      ]}
+                    >
+                      {fmt(spent)} / {fmt(limit)}
+                    </Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.progressBg,
+                      { backgroundColor: colors.surface2, marginTop: 6 },
+                    ]}
+                  >
+                    <View
+                      style={[
+                        styles.progressFill,
+                        { width: `${pct}%`, backgroundColor: barColor },
+                      ]}
+                    />
+                  </View>
+                  {isOver && (
+                    <Text style={[styles.overText, { color: colors.danger }]}>
+                      ⚠ Over budget by {fmt(spent - limit)}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        )}
+      </View>
+
       <View style={[styles.chartCard, { backgroundColor: colors.surface }]}>
         <Text style={[styles.chartTitle, { color: colors.text }]}>
           Expense by Category
@@ -336,19 +536,136 @@ export default function ReportScreen() {
           </>
         )}
       </View>
+
+      {/* Modal Set/Edit Budget */}
+      <Modal visible={budgetModal} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View
+            style={[
+              styles.modalBox,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+          >
+            <Text style={[styles.modalTitle, { color: colors.text }]}>
+              {editingCategory ? "EDIT BUDGET" : "SET BUDGET"}
+            </Text>
+
+            <Text style={[styles.modalLabel, { color: colors.muted }]}>
+              CATEGORY
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.catScroll}
+            >
+              {EXPENSE_CATEGORIES.map((cat) => (
+                <TouchableOpacity
+                  key={cat}
+                  disabled={!!editingCategory}
+                  style={[
+                    styles.catBtn,
+                    { borderColor: colors.border },
+                    budgetCategory === cat && {
+                      borderColor: colors.accent,
+                      backgroundColor: "rgba(200,245,66,0.1)",
+                    },
+                  ]}
+                  onPress={() => setBudgetCategory(cat)}
+                >
+                  <Text
+                    style={[
+                      styles.catText,
+                      {
+                        color:
+                          budgetCategory === cat ? colors.accent : colors.muted,
+                      },
+                    ]}
+                  >
+                    {cat}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            <Text style={[styles.modalLabel, { color: colors.muted }]}>
+              MONTHLY LIMIT
+            </Text>
+            <TextInput
+              style={[
+                styles.modalInput,
+                {
+                  borderColor: colors.border,
+                  backgroundColor: colors.surface2,
+                  color: colors.text,
+                },
+              ]}
+              placeholder="0"
+              placeholderTextColor={colors.muted}
+              keyboardType="numeric"
+              value={budgetAmount}
+              onChangeText={setBudgetAmount}
+            />
+
+            <TouchableOpacity
+              style={[styles.modalBtn, { backgroundColor: colors.accent }]}
+              onPress={handleSaveBudget}
+            >
+              <Text style={[styles.modalBtnText, { color: "#000" }]}>
+                SAVE BUDGET
+              </Text>
+            </TouchableOpacity>
+
+            {editingCategory && (
+              <TouchableOpacity
+                style={[styles.deleteBudgetBtn, { borderColor: colors.danger }]}
+                onPress={handleDeleteBudget}
+              >
+                <Text
+                  style={[styles.deleteBudgetText, { color: colors.danger }]}
+                >
+                  DELETE BUDGET
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            <TouchableOpacity
+              style={styles.cancelWrap}
+              onPress={() => setBudgetModal(false)}
+            >
+              <Text style={[styles.cancelBudgetText, { color: colors.muted }]}>
+                CANCEL
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   content: { padding: 20 },
-  header: { marginTop: 20, marginBottom: 20 },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginTop: 20,
+    marginBottom: 20,
+  },
   title: { fontFamily: font.black, fontSize: 28, letterSpacing: 4 },
   subtitle: {
     fontFamily: font.regular,
     fontSize: 12,
     letterSpacing: 1,
     marginTop: 4,
+  },
+  shareBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   monthNav: {
     flexDirection: "row",
@@ -401,4 +718,86 @@ const styles = StyleSheet.create({
   legendDot: { width: 10, height: 10, borderRadius: 5 },
   legendLabel: { flex: 1, fontFamily: font.regular, fontSize: 13 },
   legendAmount: { fontFamily: font.bold, fontSize: 13 },
+  budgetHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  addBudgetBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderRadius: radius.sm,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    gap: 4,
+  },
+  addBudgetText: { fontFamily: font.bold, fontSize: 10, letterSpacing: 1 },
+  budgetRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  budgetCategory: { fontFamily: font.bold, fontSize: 13 },
+  budgetAmount: { fontFamily: font.regular, fontSize: 12 },
+  overText: { fontFamily: font.regular, fontSize: 10, marginTop: 4 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.85)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  modalBox: {
+    borderWidth: 1,
+    borderRadius: radius.md,
+    padding: 24,
+    width: "100%",
+  },
+  modalTitle: {
+    fontFamily: font.black,
+    fontSize: 16,
+    letterSpacing: 3,
+    marginBottom: 20,
+  },
+  modalLabel: {
+    fontFamily: font.bold,
+    fontSize: 10,
+    letterSpacing: 3,
+    marginBottom: 8,
+  },
+  catScroll: { marginBottom: 16 },
+  catBtn: {
+    borderWidth: 1,
+    borderRadius: radius.sm,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    marginRight: 8,
+  },
+  catText: { fontFamily: font.regular, fontSize: 12 },
+  modalInput: {
+    borderWidth: 1,
+    borderRadius: radius.sm,
+    fontFamily: font.regular,
+    fontSize: 15,
+    padding: 12,
+    marginBottom: 16,
+  },
+  modalBtn: {
+    borderRadius: radius.sm,
+    padding: 16,
+    alignItems: "center",
+    marginTop: 4,
+  },
+  modalBtnText: { fontFamily: font.black, fontSize: 13, letterSpacing: 2 },
+  deleteBudgetBtn: {
+    borderWidth: 1,
+    borderRadius: radius.sm,
+    padding: 14,
+    alignItems: "center",
+    marginTop: 12,
+  },
+  deleteBudgetText: { fontFamily: font.bold, fontSize: 12, letterSpacing: 2 },
+  cancelWrap: { alignItems: "center", marginTop: 16 },
+  cancelBudgetText: { fontFamily: font.bold, fontSize: 11, letterSpacing: 2 },
 });

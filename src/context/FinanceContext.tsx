@@ -11,6 +11,8 @@ export type Item = {
   target?: number;
 };
 
+export type Budgets = Record<string, number>;
+
 type FinanceContextType = {
   salary: number;
   setSalary: (val: number) => void;
@@ -46,6 +48,10 @@ type FinanceContextType = {
     category: string,
     target?: number,
   ) => void;
+  budgets: Budgets;
+  setBudget: (category: string, limit: number) => void;
+  deleteBudget: (category: string) => void;
+  expenseByCategory: Record<string, number>;
 };
 
 const FinanceContext = createContext<FinanceContextType | null>(null);
@@ -57,6 +63,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const [savings, setSavings] = useState<Item[]>([]);
   const [selectedMonth, setSelectedMonthState] = useState(now.getMonth());
   const [selectedYear, setSelectedYearState] = useState(now.getFullYear());
+  const [budgets, setBudgets] = useState<Budgets>({});
   const isLoaded = useRef(false);
 
   // Load data dulu, baru boleh save
@@ -65,9 +72,11 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       const s = await AsyncStorage.getItem("salary");
       const e = await AsyncStorage.getItem("expenses");
       const sv = await AsyncStorage.getItem("savings");
+      const b = await AsyncStorage.getItem("budgets");
       if (s) setSalaryState(parseFloat(s));
       if (e) setExpenses(JSON.parse(e));
       if (sv) setSavings(JSON.parse(sv));
+      if (b) setBudgets(JSON.parse(b));
       isLoaded.current = true;
     }
     loadData();
@@ -89,6 +98,11 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     AsyncStorage.setItem("savings", JSON.stringify(savings));
   }, [savings]);
 
+  useEffect(() => {
+    if (!isLoaded.current) return;
+    AsyncStorage.setItem("budgets", JSON.stringify(budgets));
+  }, [budgets]);
+
   const filteredExpenses = expenses.filter(
     (e) => e.month === selectedMonth && e.year === selectedYear,
   );
@@ -105,6 +119,14 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     0,
   );
   const remaining = salary - totalExpense - totalSaving;
+
+  const expenseByCategory = filteredExpenses.reduce(
+    (acc, item) => {
+      acc[item.category] = (acc[item.category] || 0) + item.amount;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 
   function setSalary(val: number) {
     setSalaryState(val);
@@ -184,6 +206,18 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     );
   }
 
+  function setBudget(category: string, limit: number) {
+    setBudgets((prev) => ({ ...prev, [category]: limit }));
+  }
+
+  function deleteBudget(category: string) {
+    setBudgets((prev) => {
+      const next = { ...prev };
+      delete next[category];
+      return next;
+    });
+  }
+
   return (
     <FinanceContext.Provider
       value={{
@@ -205,6 +239,10 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         deleteSaving,
         editExpense,
         editSaving,
+        budgets,
+        setBudget,
+        deleteBudget,
+        expenseByCategory,
       }}
     >
       {children}

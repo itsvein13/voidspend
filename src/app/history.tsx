@@ -1,11 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { font, radius } from "../constants/theme";
@@ -36,6 +37,8 @@ export default function HistoryScreen() {
     selectedMonth,
     selectedYear,
     setSelectedMonth,
+    deleteExpense,
+    deleteSaving,
   } = useFinance();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -62,6 +65,24 @@ export default function HistoryScreen() {
       : filter === "expense"
         ? allItems.filter((i) => i.type === "expense")
         : allItems.filter((i) => i.type === "savings");
+
+  function handleDelete(id: number, type: "expense" | "savings", name: string) {
+    Alert.alert(
+      "Delete Transaction",
+      `Delete "${name}"? This can't be undone.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            if (type === "expense") deleteExpense(id);
+            else deleteSaving(id);
+          },
+        },
+      ],
+    );
+  }
 
   return (
     <ScrollView
@@ -173,6 +194,16 @@ export default function HistoryScreen() {
                 {item.type === "expense" ? "-" : "+"}
                 {fmt(item.amount)}
               </Text>
+              <TouchableOpacity
+                style={[styles.delBtn, { borderColor: colors.border }]}
+                onPress={() => handleDelete(item.id, item.type, item.name)}
+              >
+                <Ionicons
+                  name="trash-outline"
+                  size={16}
+                  color={colors.danger}
+                />
+              </TouchableOpacity>
             </View>
           ))}
         </View>
@@ -225,7 +256,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: radius.md,
     padding: 14,
-    gap: 12,
+    gap: 10,
   },
   iconBox: {
     width: 42,
@@ -238,4 +269,10 @@ const styles = StyleSheet.create({
   itemName: { fontFamily: font.bold, fontSize: 14 },
   itemCat: { fontFamily: font.regular, fontSize: 11, marginTop: 2 },
   itemAmount: { fontFamily: font.black, fontSize: 14 },
+  delBtn: {
+    borderWidth: 1,
+    borderRadius: radius.sm,
+    padding: 8,
+    marginLeft: 4,
+  },
 });
