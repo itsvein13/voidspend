@@ -2,7 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import {
   Image,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -443,264 +445,289 @@ export default function HomeScreen() {
 
       {/* Modal Add Expense */}
       <Modal visible={expenseModal} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalBox, { backgroundColor: colors.surface }]}>
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>
-                Add Expense
-              </Text>
-              <TouchableOpacity onPress={() => setExpenseModal(false)}>
-                <Ionicons name="close" size={22} color={colors.muted} />
-              </TouchableOpacity>
-            </View>
-            <Text style={[styles.modalLabel, { color: colors.muted }]}>
-              CATEGORY
-            </Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.catScroll}
-            >
-              {EXPENSE_CATEGORIES.map((cat) => (
-                <TouchableOpacity
-                  key={cat}
-                  style={[
-                    styles.catBtn,
-                    { borderColor: colors.border },
-                    expCategory === cat && {
-                      borderColor: colors.danger,
-                      backgroundColor: "rgba(255,59,59,0.1)",
-                    },
-                  ]}
-                  onPress={() => setExpCategory(cat)}
-                >
-                  <Text
-                    style={[
-                      styles.catText,
-                      {
-                        color:
-                          expCategory === cat ? colors.danger : colors.muted,
-                      },
-                    ]}
-                  >
-                    {cat}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-            <Text style={[styles.modalLabel, { color: colors.muted }]}>
-              NAME
-            </Text>
-            <TextInput
-              style={[
-                styles.modalInput,
-                {
-                  borderColor: colors.border,
-                  backgroundColor: colors.surface2,
-                  color: colors.text,
-                },
-              ]}
-              placeholder="e.g. Lunch, Grab..."
-              placeholderTextColor={colors.muted}
-              value={expName}
-              onChangeText={setExpName}
-            />
-            <Text style={[styles.modalLabel, { color: colors.muted }]}>
-              AMOUNT
-            </Text>
-            <TextInput
-              style={[
-                styles.modalInput,
-                {
-                  borderColor: colors.border,
-                  backgroundColor: colors.surface2,
-                  color: colors.text,
-                },
-              ]}
-              placeholder="0"
-              placeholderTextColor={colors.muted}
-              keyboardType="numeric"
-              value={expAmount}
-              onChangeText={(text) => setExpAmount(formatNumberInput(text))}
-            />
-            <TouchableOpacity
-              style={[styles.modalBtn, { backgroundColor: colors.danger }]}
-              onPress={handleAddExpense}
-            >
-              <Text style={[styles.modalBtnText, { color: "#fff" }]}>
-                + ADD EXPENSE
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Modal Add Savings */}
-      <Modal visible={savingsModal} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalBox, { backgroundColor: colors.surface }]}>
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>
-                Add Savings
-              </Text>
-              <TouchableOpacity onPress={() => setSavingsModal(false)}>
-                <Ionicons name="close" size={22} color={colors.muted} />
-              </TouchableOpacity>
-            </View>
-            <Text style={[styles.modalLabel, { color: colors.muted }]}>
-              CATEGORY
-            </Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.catScroll}
-            >
-              {SAVINGS_CATEGORIES.map((cat) => (
-                <TouchableOpacity
-                  key={cat}
-                  style={[
-                    styles.catBtn,
-                    { borderColor: colors.border },
-                    savCategory === cat && {
-                      borderColor: colors.saving,
-                      backgroundColor: "rgba(59,130,246,0.1)",
-                    },
-                  ]}
-                  onPress={() => setSavCategory(cat)}
-                >
-                  <Text
-                    style={[
-                      styles.catText,
-                      {
-                        color:
-                          savCategory === cat ? colors.saving : colors.muted,
-                      },
-                    ]}
-                  >
-                    {cat}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-            <Text style={[styles.modalLabel, { color: colors.muted }]}>
-              NAME
-            </Text>
-            <TextInput
-              style={[
-                styles.modalInput,
-                {
-                  borderColor: colors.border,
-                  backgroundColor: colors.surface2,
-                  color: colors.text,
-                },
-              ]}
-              placeholder="e.g. Emergency fund, Vacation..."
-              placeholderTextColor={colors.muted}
-              value={savName}
-              onChangeText={setSavName}
-            />
-            <Text style={[styles.modalLabel, { color: colors.muted }]}>
-              AMOUNT
-            </Text>
-            <TextInput
-              style={[
-                styles.modalInput,
-                {
-                  borderColor: colors.border,
-                  backgroundColor: colors.surface2,
-                  color: colors.text,
-                },
-              ]}
-              placeholder="0"
-              placeholderTextColor={colors.muted}
-              keyboardType="numeric"
-              value={savAmount}
-              onChangeText={(text) => setSavAmount(formatNumberInput(text))}
-            />
-            <Text style={[styles.modalLabel, { color: colors.muted }]}>
-              TARGET (OPTIONAL)
-            </Text>
-            <TextInput
-              style={[
-                styles.modalInput,
-                {
-                  borderColor: colors.border,
-                  backgroundColor: colors.surface2,
-                  color: colors.text,
-                },
-              ]}
-              placeholder="0"
-              placeholderTextColor={colors.muted}
-              keyboardType="numeric"
-              value={savTarget}
-              onChangeText={(text) => setSavTarget(formatNumberInput(text))}
-            />
-            <TouchableOpacity
-              style={[styles.modalBtn, { backgroundColor: colors.saving }]}
-              onPress={handleAddSavings}
-            >
-              <Text style={[styles.modalBtnText, { color: "#fff" }]}>
-                + ADD SAVINGS
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Modal Add Income */}
-      <Modal visible={incomeModal} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalBox, { backgroundColor: colors.surface }]}>
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>
-                Monthly Salary
-              </Text>
-              <TouchableOpacity onPress={() => setIncomeModal(false)}>
-                <Ionicons name="close" size={22} color={colors.muted} />
-              </TouchableOpacity>
-            </View>
-            <Text style={[styles.modalDesc, { color: colors.muted }]}>
-              Update your monthly salary. This is used to calculate your
-              remaining balance.
-            </Text>
-            <Text style={[styles.modalLabel, { color: colors.muted }]}>
-              SALARY (IDR)
-            </Text>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <View style={styles.modalOverlay}>
             <View
-              style={[
-                styles.salaryInputWrap,
-                {
-                  borderColor: colors.border,
-                  backgroundColor: colors.surface2,
-                },
-              ]}
+              style={[styles.modalBox, { backgroundColor: colors.surface }]}
             >
-              <Text style={[styles.salaryPrefix, { color: colors.accent }]}>
-                IDR
+              <View style={styles.modalHeader}>
+                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                  Add Expense
+                </Text>
+                <TouchableOpacity onPress={() => setExpenseModal(false)}>
+                  <Ionicons name="close" size={22} color={colors.muted} />
+                </TouchableOpacity>
+              </View>
+              <Text style={[styles.modalLabel, { color: colors.muted }]}>
+                CATEGORY
+              </Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.catScroll}
+              >
+                {EXPENSE_CATEGORIES.map((cat) => (
+                  <TouchableOpacity
+                    key={cat}
+                    style={[
+                      styles.catBtn,
+                      { borderColor: colors.border },
+                      expCategory === cat && {
+                        borderColor: colors.danger,
+                        backgroundColor: "rgba(255,59,59,0.1)",
+                      },
+                    ]}
+                    onPress={() => setExpCategory(cat)}
+                  >
+                    <Text
+                      style={[
+                        styles.catText,
+                        {
+                          color:
+                            expCategory === cat ? colors.danger : colors.muted,
+                        },
+                      ]}
+                    >
+                      {cat}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+              <Text style={[styles.modalLabel, { color: colors.muted }]}>
+                NAME
               </Text>
               <TextInput
                 style={[
-                  styles.salaryInput,
-                  { color: colors.text, borderLeftColor: colors.border },
+                  styles.modalInput,
+                  {
+                    borderColor: colors.border,
+                    backgroundColor: colors.surface2,
+                    color: colors.text,
+                  },
+                ]}
+                placeholder="e.g. Lunch, Grab..."
+                placeholderTextColor={colors.muted}
+                value={expName}
+                onChangeText={setExpName}
+              />
+              <Text style={[styles.modalLabel, { color: colors.muted }]}>
+                AMOUNT
+              </Text>
+              <TextInput
+                style={[
+                  styles.modalInput,
+                  {
+                    borderColor: colors.border,
+                    backgroundColor: colors.surface2,
+                    color: colors.text,
+                  },
                 ]}
                 placeholder="0"
                 placeholderTextColor={colors.muted}
                 keyboardType="numeric"
-                value={incomeInput}
-                onChangeText={(text) => setIncomeInput(formatNumberInput(text))}
+                value={expAmount}
+                onChangeText={(text) => setExpAmount(formatNumberInput(text))}
               />
+              <TouchableOpacity
+                style={[styles.modalBtn, { backgroundColor: colors.danger }]}
+                onPress={handleAddExpense}
+              >
+                <Text style={[styles.modalBtnText, { color: "#fff" }]}>
+                  + ADD EXPENSE
+                </Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              style={[styles.modalBtn, { backgroundColor: colors.accent }]}
-              onPress={() => {
-                setSalary(parseFormattedNumber(incomeInput));
-                setIncomeModal(false);
-              }}
-            >
-              <Text style={[styles.modalBtnText, { color: "#000" }]}>SAVE</Text>
-            </TouchableOpacity>
           </View>
-        </View>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Modal Add Savings */}
+      <Modal visible={savingsModal} transparent animationType="slide">
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <View style={styles.modalOverlay}>
+            <View
+              style={[styles.modalBox, { backgroundColor: colors.surface }]}
+            >
+              <View style={styles.modalHeader}>
+                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                  Add Savings
+                </Text>
+                <TouchableOpacity onPress={() => setSavingsModal(false)}>
+                  <Ionicons name="close" size={22} color={colors.muted} />
+                </TouchableOpacity>
+              </View>
+              <Text style={[styles.modalLabel, { color: colors.muted }]}>
+                CATEGORY
+              </Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.catScroll}
+              >
+                {SAVINGS_CATEGORIES.map((cat) => (
+                  <TouchableOpacity
+                    key={cat}
+                    style={[
+                      styles.catBtn,
+                      { borderColor: colors.border },
+                      savCategory === cat && {
+                        borderColor: colors.saving,
+                        backgroundColor: "rgba(59,130,246,0.1)",
+                      },
+                    ]}
+                    onPress={() => setSavCategory(cat)}
+                  >
+                    <Text
+                      style={[
+                        styles.catText,
+                        {
+                          color:
+                            savCategory === cat ? colors.saving : colors.muted,
+                        },
+                      ]}
+                    >
+                      {cat}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+              <Text style={[styles.modalLabel, { color: colors.muted }]}>
+                NAME
+              </Text>
+              <TextInput
+                style={[
+                  styles.modalInput,
+                  {
+                    borderColor: colors.border,
+                    backgroundColor: colors.surface2,
+                    color: colors.text,
+                  },
+                ]}
+                placeholder="e.g. Emergency fund, Vacation..."
+                placeholderTextColor={colors.muted}
+                value={savName}
+                onChangeText={setSavName}
+              />
+              <Text style={[styles.modalLabel, { color: colors.muted }]}>
+                AMOUNT
+              </Text>
+              <TextInput
+                style={[
+                  styles.modalInput,
+                  {
+                    borderColor: colors.border,
+                    backgroundColor: colors.surface2,
+                    color: colors.text,
+                  },
+                ]}
+                placeholder="0"
+                placeholderTextColor={colors.muted}
+                keyboardType="numeric"
+                value={savAmount}
+                onChangeText={(text) => setSavAmount(formatNumberInput(text))}
+              />
+              <Text style={[styles.modalLabel, { color: colors.muted }]}>
+                TARGET (OPTIONAL)
+              </Text>
+              <TextInput
+                style={[
+                  styles.modalInput,
+                  {
+                    borderColor: colors.border,
+                    backgroundColor: colors.surface2,
+                    color: colors.text,
+                  },
+                ]}
+                placeholder="0"
+                placeholderTextColor={colors.muted}
+                keyboardType="numeric"
+                value={savTarget}
+                onChangeText={(text) => setSavTarget(formatNumberInput(text))}
+              />
+              <TouchableOpacity
+                style={[styles.modalBtn, { backgroundColor: colors.saving }]}
+                onPress={handleAddSavings}
+              >
+                <Text style={[styles.modalBtnText, { color: "#fff" }]}>
+                  + ADD SAVINGS
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Modal Add Income */}
+      <Modal visible={incomeModal} transparent animationType="slide">
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <View style={styles.modalOverlay}>
+            <View
+              style={[styles.modalBox, { backgroundColor: colors.surface }]}
+            >
+              <View style={styles.modalHeader}>
+                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                  Monthly Salary
+                </Text>
+                <TouchableOpacity onPress={() => setIncomeModal(false)}>
+                  <Ionicons name="close" size={22} color={colors.muted} />
+                </TouchableOpacity>
+              </View>
+              <Text style={[styles.modalDesc, { color: colors.muted }]}>
+                Update your monthly salary. This is used to calculate your
+                remaining balance.
+              </Text>
+              <Text style={[styles.modalLabel, { color: colors.muted }]}>
+                SALARY (IDR)
+              </Text>
+              <View
+                style={[
+                  styles.salaryInputWrap,
+                  {
+                    borderColor: colors.border,
+                    backgroundColor: colors.surface2,
+                  },
+                ]}
+              >
+                <Text style={[styles.salaryPrefix, { color: colors.accent }]}>
+                  IDR
+                </Text>
+                <TextInput
+                  style={[
+                    styles.salaryInput,
+                    { color: colors.text, borderLeftColor: colors.border },
+                  ]}
+                  placeholder="0"
+                  placeholderTextColor={colors.muted}
+                  keyboardType="numeric"
+                  value={incomeInput}
+                  onChangeText={(text) =>
+                    setIncomeInput(formatNumberInput(text))
+                  }
+                />
+              </View>
+              <TouchableOpacity
+                style={[styles.modalBtn, { backgroundColor: colors.accent }]}
+                onPress={() => {
+                  setSalary(parseFormattedNumber(incomeInput));
+                  setIncomeModal(false);
+                }}
+              >
+                <Text style={[styles.modalBtnText, { color: "#000" }]}>
+                  SAVE
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
       </Modal>
     </ScrollView>
   );

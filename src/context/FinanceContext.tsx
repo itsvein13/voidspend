@@ -12,6 +12,7 @@ export type Item = {
 };
 
 export type Budgets = Record<string, number>;
+export type Salaries = Record<string, number>;
 
 type FinanceContextType = {
   salary: number;
@@ -57,9 +58,13 @@ type FinanceContextType = {
 
 const FinanceContext = createContext<FinanceContextType | null>(null);
 
+function salaryKey(month: number, year: number) {
+  return `${year}-${month}`;
+}
+
 export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const now = new Date();
-  const [salary, setSalaryState] = useState(0);
+  const [salaries, setSalaries] = useState<Salaries>({});
   const [expenses, setExpenses] = useState<Item[]>([]);
   const [savings, setSavings] = useState<Item[]>([]);
   const [selectedMonth, setSelectedMonthState] = useState(now.getMonth());
@@ -70,11 +75,21 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   // Load data dulu, baru boleh save
   useEffect(() => {
     async function loadData() {
-      const s = await AsyncStorage.getItem("salary");
+      const sMap = await AsyncStorage.getItem("salaries");
+      const legacySalary = await AsyncStorage.getItem("salary");
       const e = await AsyncStorage.getItem("expenses");
       const sv = await AsyncStorage.getItem("savings");
       const b = await AsyncStorage.getItem("budgets");
-      if (s) setSalaryState(parseFloat(s));
+
+      if (sMap) {
+        setSalaries(JSON.parse(sMap));
+      } else if (legacySalary) {
+        // migrate old single-value salary to the current month
+        const key = salaryKey(now.getMonth(), now.getFullYear());
+        setSalaries({ [key]: parseFloat(legacySalary) });
+        await AsyncStorage.removeItem("salary");
+      }
+
       if (e) setExpenses(JSON.parse(e));
       if (sv) setSavings(JSON.parse(sv));
       if (b) setBudgets(JSON.parse(b));
@@ -86,8 +101,8 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   // Save hanya setelah data selesai di-load
   useEffect(() => {
     if (!isLoaded.current) return;
-    AsyncStorage.setItem("salary", String(salary));
-  }, [salary]);
+    AsyncStorage.setItem("salaries", JSON.stringify(salaries));
+  }, [salaries]);
 
   useEffect(() => {
     if (!isLoaded.current) return;
@@ -103,6 +118,8 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     if (!isLoaded.current) return;
     AsyncStorage.setItem("budgets", JSON.stringify(budgets));
   }, [budgets]);
+
+  const salary = salaries[salaryKey(selectedMonth, selectedYear)] || 0;
 
   const filteredExpenses = expenses.filter(
     (e) => e.month === selectedMonth && e.year === selectedYear,
@@ -130,7 +147,10 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   );
 
   function setSalary(val: number) {
-    setSalaryState(val);
+    setSalaries((prev) => ({
+      ...prev,
+      [salaryKey(selectedMonth, selectedYear)]: val,
+    }));
   }
 
   function setSelectedMonth(month: number, year: number) {
