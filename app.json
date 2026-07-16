@@ -8,6 +8,7 @@
     "scheme": "duitku",
     "userInterfaceStyle": "dark",
     "android": {
+      "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#000000"

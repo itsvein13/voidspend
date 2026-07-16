@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import * as Linking from "expo-linking";
 import { useState } from "react";
 import {
   Alert,
@@ -19,6 +20,7 @@ import { useUser } from "../context/UserContext";
 import { formatNumberInput, parseFormattedNumber } from "../utils/format";
 
 const fmt = (n: number) => "Rp " + n.toLocaleString("id-ID");
+const SAWERIA_URL = "https://saweria.co/vein13";
 
 export default function ProfileScreen() {
   const { colors, theme, toggleTheme } = useTheme();
@@ -61,6 +63,10 @@ export default function ProfileScreen() {
         },
       ],
     );
+  }
+
+  function handleDonate() {
+    Linking.openURL(SAWERIA_URL);
   }
 
   return (
@@ -122,6 +128,32 @@ export default function ProfileScreen() {
           </Text>
         </View>
       </View>
+
+      {/* Support Card */}
+      <TouchableOpacity
+        style={[styles.supportCard, { borderColor: colors.accent }]}
+        onPress={handleDonate}
+      >
+        <View style={styles.supportLeft}>
+          <View
+            style={[
+              styles.supportIcon,
+              { backgroundColor: "rgba(200,245,66,0.15)" },
+            ]}
+          >
+            <Ionicons name="heart" size={20} color={colors.accent} />
+          </View>
+          <View>
+            <Text style={[styles.supportTitle, { color: colors.text }]}>
+              Support the Developer
+            </Text>
+            <Text style={[styles.supportSub, { color: colors.muted }]}>
+              Buy me a coffee via Saweria
+            </Text>
+          </View>
+        </View>
+        <Ionicons name="open-outline" size={18} color={colors.accent} />
+      </TouchableOpacity>
 
       <Text style={[styles.sectionLabel, { color: colors.muted }]}>
         SETTINGS
@@ -228,7 +260,7 @@ export default function ProfileScreen() {
       </View>
 
       <Text style={[styles.footer, { color: colors.muted }]}>
-        VOIDSPEND v1.0.0 — created by veingh0st
+        VOIDSPEND v1.0.1 — created by veingh0st
       </Text>
 
       <Modal visible={editNameVisible} transparent animationType="fade">
@@ -361,7 +393,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginTop: 4,
   },
-  statsRow: { flexDirection: "row", gap: 8, marginBottom: 24 },
+  statsRow: { flexDirection: "row", gap: 8, marginBottom: 16 },
   statCard: {
     flex: 1,
     borderRadius: radius.md,
@@ -370,6 +402,25 @@ const styles = StyleSheet.create({
   },
   statValue: { fontFamily: font.black, fontSize: 14, marginBottom: 4 },
   statLabel: { fontFamily: font.regular, fontSize: 10, letterSpacing: 1 },
+  supportCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderRadius: radius.lg,
+    padding: 16,
+    marginBottom: 24,
+  },
+  supportLeft: { flexDirection: "row", alignItems: "center", gap: 12 },
+  supportIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  supportTitle: { fontFamily: font.bold, fontSize: 14 },
+  supportSub: { fontFamily: font.regular, fontSize: 11, marginTop: 2 },
   sectionLabel: {
     fontFamily: font.bold,
     fontSize: 10,
