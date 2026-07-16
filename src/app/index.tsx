@@ -468,9 +468,14 @@ export default function HomeScreen() {
       </View>
 
       {/* Modal Add Expense */}
-      <Modal visible={expenseModal} transparent animationType="slide">
+      <Modal
+        visible={expenseModal}
+        transparent
+        animationType="slide"
+        statusBarTranslucent
+      >
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
           <View style={styles.modalOverlay}>
@@ -569,9 +574,14 @@ export default function HomeScreen() {
       </Modal>
 
       {/* Modal Add Savings */}
-      <Modal visible={savingsModal} transparent animationType="slide">
+      <Modal
+        visible={savingsModal}
+        transparent
+        animationType="slide"
+        statusBarTranslucent
+      >
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
           <View style={styles.modalOverlay}>
@@ -688,9 +698,14 @@ export default function HomeScreen() {
       </Modal>
 
       {/* Modal Add Income */}
-      <Modal visible={incomeModal} transparent animationType="slide">
+      <Modal
+        visible={incomeModal}
+        transparent
+        animationType="slide"
+        statusBarTranslucent
+      >
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
           <View style={styles.modalOverlay}>

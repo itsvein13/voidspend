@@ -265,9 +265,14 @@ export default function ProfileScreen() {
         VOIDSPEND v1.0.1 — created by veingh0st
       </Text>
 
-      <Modal visible={editNameVisible} transparent animationType="fade">
+      <Modal
+        visible={editNameVisible}
+        transparent
+        animationType="fade"
+        statusBarTranslucent
+      >
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
           <View style={styles.modalOverlay}>
@@ -315,9 +320,14 @@ export default function ProfileScreen() {
         </KeyboardAvoidingView>
       </Modal>
 
-      <Modal visible={editSalaryVisible} transparent animationType="fade">
+      <Modal
+        visible={editSalaryVisible}
+        transparent
+        animationType="fade"
+        statusBarTranslucent
+      >
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
           <View style={styles.modalOverlay}>

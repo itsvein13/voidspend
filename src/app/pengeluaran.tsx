@@ -234,9 +234,14 @@ export default function ExpenseScreen() {
         </View>
       ))}
 
-      <Modal visible={editVisible} transparent animationType="fade">
+      <Modal
+        visible={editVisible}
+        transparent
+        animationType="fade"
+        statusBarTranslucent
+      >
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
           <View style={styles.modalOverlay}>
