@@ -54,12 +54,28 @@ type FinanceContextType = {
   deleteBudget: (category: string) => void;
   expenseByCategory: Record<string, number>;
   resetData: () => void;
+  incomeChangePct: number | null;
+  expenseChangePct: number | null;
+  savingChangePct: number | null;
 };
 
 const FinanceContext = createContext<FinanceContextType | null>(null);
 
 function salaryKey(month: number, year: number) {
   return `${year}-${month}`;
+}
+
+function prevMonthOf(month: number, year: number) {
+  if (month === 0) return { month: 11, year: year - 1 };
+  return { month: month - 1, year };
+}
+
+function pctChange(current: number, previous: number): number | null {
+  if (previous === 0) {
+    if (current === 0) return 0;
+    return null; // no baseline to compare against
+  }
+  return ((current - previous) / previous) * 100;
 }
 
 export function FinanceProvider({ children }: { children: React.ReactNode }) {
@@ -84,7 +100,6 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       if (sMap) {
         setSalaries(JSON.parse(sMap));
       } else if (legacySalary) {
-        // migrate old single-value salary to the current month
         const key = salaryKey(now.getMonth(), now.getFullYear());
         setSalaries({ [key]: parseFloat(legacySalary) });
         await AsyncStorage.removeItem("salary");
@@ -98,7 +113,6 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     loadData();
   }, []);
 
-  // Save hanya setelah data selesai di-load
   useEffect(() => {
     if (!isLoaded.current) return;
     AsyncStorage.setItem("salaries", JSON.stringify(salaries));
@@ -145,6 +159,20 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     },
     {} as Record<string, number>,
   );
+
+  // Perbandingan ke bulan sebelumnya
+  const prev = prevMonthOf(selectedMonth, selectedYear);
+  const prevSalary = salaries[salaryKey(prev.month, prev.year)] || 0;
+  const prevExpense = expenses
+    .filter((e) => e.month === prev.month && e.year === prev.year)
+    .reduce((acc, item) => acc + item.amount, 0);
+  const prevSaving = savings
+    .filter((s) => s.month === prev.month && s.year === prev.year)
+    .reduce((acc, item) => acc + item.amount, 0);
+
+  const incomeChangePct = pctChange(salary, prevSalary);
+  const expenseChangePct = pctChange(totalExpense, prevExpense);
+  const savingChangePct = pctChange(totalSaving, prevSaving);
 
   function setSalary(val: number) {
     setSalaries((prev) => ({
@@ -272,6 +300,9 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         deleteBudget,
         expenseByCategory,
         resetData,
+        incomeChangePct,
+        expenseChangePct,
+        savingChangePct,
       }}
     >
       {children}

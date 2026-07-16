@@ -1,6 +1,9 @@
 import { useState } from "react";
 import {
+  Alert,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -74,6 +77,17 @@ export default function ExpenseScreen() {
       editCategory,
     );
     setEditVisible(false);
+  }
+
+  function handleDelete(id: number, name: string) {
+    Alert.alert("Delete Expense", `Delete "${name}"? This can't be undone.`, [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => deleteExpense(id),
+      },
+    ]);
   }
 
   return (
@@ -210,7 +224,7 @@ export default function ExpenseScreen() {
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.delBtn, { borderColor: colors.border }]}
-              onPress={() => deleteExpense(item.id)}
+              onPress={() => handleDelete(item.id, item.name)}
             >
               <Text style={[styles.delText, { color: colors.muted }]}>
                 DELETE
@@ -221,99 +235,106 @@ export default function ExpenseScreen() {
       ))}
 
       <Modal visible={editVisible} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View
-            style={[
-              styles.modalBox,
-              { backgroundColor: colors.surface, borderColor: colors.border },
-            ]}
-          >
-            <Text style={[styles.modalTitle, { color: colors.text }]}>
-              EDIT EXPENSE
-            </Text>
-            <Text style={[styles.label, { color: colors.muted }]}>
-              CATEGORY
-            </Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.categoryScroll}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={{ flex: 1 }}
+        >
+          <View style={styles.modalOverlay}>
+            <View
+              style={[
+                styles.modalBox,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+              ]}
             >
-              {CATEGORIES.map((cat) => (
-                <TouchableOpacity
-                  key={cat}
-                  style={[
-                    styles.catBtn,
-                    { borderColor: colors.border },
-                    editCategory === cat && {
-                      borderColor: colors.danger,
-                      backgroundColor: "rgba(255,59,59,0.1)",
-                    },
-                  ]}
-                  onPress={() => setEditCategory(cat)}
-                >
-                  <Text
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                EDIT EXPENSE
+              </Text>
+              <Text style={[styles.label, { color: colors.muted }]}>
+                CATEGORY
+              </Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.categoryScroll}
+              >
+                {CATEGORIES.map((cat) => (
+                  <TouchableOpacity
+                    key={cat}
                     style={[
-                      styles.catText,
-                      { color: colors.muted },
+                      styles.catBtn,
+                      { borderColor: colors.border },
                       editCategory === cat && {
-                        color: colors.danger,
-                        fontFamily: font.bold,
+                        borderColor: colors.danger,
+                        backgroundColor: "rgba(255,59,59,0.1)",
                       },
                     ]}
+                    onPress={() => setEditCategory(cat)}
                   >
-                    {cat}
+                    <Text
+                      style={[
+                        styles.catText,
+                        { color: colors.muted },
+                        editCategory === cat && {
+                          color: colors.danger,
+                          fontFamily: font.bold,
+                        },
+                      ]}
+                    >
+                      {cat}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+              <Text style={[styles.label, { color: colors.muted }]}>NAME</Text>
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    borderColor: colors.border,
+                    backgroundColor: colors.surface2,
+                    color: colors.text,
+                  },
+                ]}
+                value={editName}
+                onChangeText={setEditName}
+                placeholderTextColor={colors.muted}
+              />
+              <Text style={[styles.label, { color: colors.muted }]}>
+                AMOUNT
+              </Text>
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    borderColor: colors.border,
+                    backgroundColor: colors.surface2,
+                    color: colors.text,
+                  },
+                ]}
+                value={editAmount}
+                onChangeText={(text) => setEditAmount(formatNumberInput(text))}
+                keyboardType="numeric"
+                placeholderTextColor={colors.muted}
+              />
+              <View style={styles.modalActions}>
+                <TouchableOpacity
+                  style={[styles.cancelBtn, { borderColor: colors.border }]}
+                  onPress={() => setEditVisible(false)}
+                >
+                  <Text style={[styles.cancelText, { color: colors.muted }]}>
+                    CANCEL
                   </Text>
                 </TouchableOpacity>
-              ))}
-            </ScrollView>
-            <Text style={[styles.label, { color: colors.muted }]}>NAME</Text>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  borderColor: colors.border,
-                  backgroundColor: colors.surface2,
-                  color: colors.text,
-                },
-              ]}
-              value={editName}
-              onChangeText={setEditName}
-              placeholderTextColor={colors.muted}
-            />
-            <Text style={[styles.label, { color: colors.muted }]}>AMOUNT</Text>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  borderColor: colors.border,
-                  backgroundColor: colors.surface2,
-                  color: colors.text,
-                },
-              ]}
-              value={editAmount}
-              onChangeText={(text) => setEditAmount(formatNumberInput(text))}
-              keyboardType="numeric"
-              placeholderTextColor={colors.muted}
-            />
-            <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={[styles.cancelBtn, { borderColor: colors.border }]}
-                onPress={() => setEditVisible(false)}
-              >
-                <Text style={[styles.cancelText, { color: colors.muted }]}>
-                  CANCEL
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.saveBtn, { backgroundColor: colors.danger }]}
-                onPress={handleEdit}
-              >
-                <Text style={[styles.saveText, { color: "#fff" }]}>SAVE</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.saveBtn, { backgroundColor: colors.danger }]}
+                  onPress={handleEdit}
+                >
+                  <Text style={[styles.saveText, { color: "#fff" }]}>SAVE</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </ScrollView>
   );

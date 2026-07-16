@@ -4,7 +4,9 @@ import { useState } from "react";
 import {
   Alert,
   Image,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -264,94 +266,104 @@ export default function ProfileScreen() {
       </Text>
 
       <Modal visible={editNameVisible} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View
-            style={[
-              styles.modalBox,
-              { backgroundColor: colors.surface, borderColor: colors.border },
-            ]}
-          >
-            <Text style={[styles.modalTitle, { color: colors.text }]}>
-              EDIT USERNAME
-            </Text>
-            <TextInput
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={{ flex: 1 }}
+        >
+          <View style={styles.modalOverlay}>
+            <View
               style={[
-                styles.input,
-                {
-                  borderColor: colors.border,
-                  backgroundColor: colors.surface2,
-                  color: colors.text,
-                },
+                styles.modalBox,
+                { backgroundColor: colors.surface, borderColor: colors.border },
               ]}
-              value={nameInput}
-              onChangeText={setNameInput}
-              placeholderTextColor={colors.muted}
-              autoFocus
-            />
-            <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={[styles.cancelBtn, { borderColor: colors.border }]}
-                onPress={() => setEditNameVisible(false)}
-              >
-                <Text style={[styles.cancelText, { color: colors.muted }]}>
-                  CANCEL
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.saveBtn, { backgroundColor: colors.accent }]}
-                onPress={handleSaveName}
-              >
-                <Text style={[styles.saveText, { color: "#000" }]}>SAVE</Text>
-              </TouchableOpacity>
+            >
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                EDIT USERNAME
+              </Text>
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    borderColor: colors.border,
+                    backgroundColor: colors.surface2,
+                    color: colors.text,
+                  },
+                ]}
+                value={nameInput}
+                onChangeText={setNameInput}
+                placeholderTextColor={colors.muted}
+                autoFocus
+              />
+              <View style={styles.modalActions}>
+                <TouchableOpacity
+                  style={[styles.cancelBtn, { borderColor: colors.border }]}
+                  onPress={() => setEditNameVisible(false)}
+                >
+                  <Text style={[styles.cancelText, { color: colors.muted }]}>
+                    CANCEL
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.saveBtn, { backgroundColor: colors.accent }]}
+                  onPress={handleSaveName}
+                >
+                  <Text style={[styles.saveText, { color: "#000" }]}>SAVE</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       <Modal visible={editSalaryVisible} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View
-            style={[
-              styles.modalBox,
-              { backgroundColor: colors.surface, borderColor: colors.border },
-            ]}
-          >
-            <Text style={[styles.modalTitle, { color: colors.text }]}>
-              EDIT SALARY
-            </Text>
-            <TextInput
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={{ flex: 1 }}
+        >
+          <View style={styles.modalOverlay}>
+            <View
               style={[
-                styles.input,
-                {
-                  borderColor: colors.border,
-                  backgroundColor: colors.surface2,
-                  color: colors.text,
-                },
+                styles.modalBox,
+                { backgroundColor: colors.surface, borderColor: colors.border },
               ]}
-              value={salaryInput}
-              onChangeText={(text) => setSalaryInput(formatNumberInput(text))}
-              keyboardType="numeric"
-              placeholderTextColor={colors.muted}
-              autoFocus
-            />
-            <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={[styles.cancelBtn, { borderColor: colors.border }]}
-                onPress={() => setEditSalaryVisible(false)}
-              >
-                <Text style={[styles.cancelText, { color: colors.muted }]}>
-                  CANCEL
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.saveBtn, { backgroundColor: colors.accent }]}
-                onPress={handleSaveSalary}
-              >
-                <Text style={[styles.saveText, { color: "#000" }]}>SAVE</Text>
-              </TouchableOpacity>
+            >
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                EDIT SALARY
+              </Text>
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    borderColor: colors.border,
+                    backgroundColor: colors.surface2,
+                    color: colors.text,
+                  },
+                ]}
+                value={salaryInput}
+                onChangeText={(text) => setSalaryInput(formatNumberInput(text))}
+                keyboardType="numeric"
+                placeholderTextColor={colors.muted}
+                autoFocus
+              />
+              <View style={styles.modalActions}>
+                <TouchableOpacity
+                  style={[styles.cancelBtn, { borderColor: colors.border }]}
+                  onPress={() => setEditSalaryVisible(false)}
+                >
+                  <Text style={[styles.cancelText, { color: colors.muted }]}>
+                    CANCEL
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.saveBtn, { backgroundColor: colors.accent }]}
+                  onPress={handleSaveSalary}
+                >
+                  <Text style={[styles.saveText, { color: "#000" }]}>SAVE</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </ScrollView>
   );

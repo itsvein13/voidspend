@@ -76,6 +76,12 @@ function getGreetingMessage(remaining: number, salary: number): string {
   return "Whoa, you're almost out!\nTime to slow down on spending.";
 }
 
+function formatChange(pct: number | null): string {
+  if (pct === null) return "New this month";
+  const sign = pct >= 0 ? "+" : "";
+  return `${sign}${pct.toFixed(0)}% vs last month`;
+}
+
 function MiniChart({ expenses, savings }: { expenses: any[]; savings: any[] }) {
   const width = 240;
   const height = 80;
@@ -152,6 +158,9 @@ export default function HomeScreen() {
     setSalary,
     filteredExpenses,
     filteredSavings,
+    incomeChangePct,
+    expenseChangePct,
+    savingChangePct,
   } = useFinance();
   const { colors, theme, toggleTheme } = useTheme();
   const { username } = useUser();
@@ -288,11 +297,26 @@ export default function HomeScreen() {
         <Text style={[styles.balanceAmount, { color: colors.text }]}>
           {fmt(remaining)}
         </Text>
-        <View style={styles.balanceBadge}>
-          <Ionicons name="arrow-up" size={10} color="#000" />
-          <Text style={styles.balanceBadgeText}>
-            {salary > 0 ? ((remaining / salary) * 100).toFixed(0) : 0}% vs last
-            month
+        <View
+          style={[
+            styles.balanceBadge,
+            { backgroundColor: remaining >= 0 ? colors.accent : colors.danger },
+          ]}
+        >
+          <Ionicons
+            name={remaining >= 0 ? "arrow-up" : "warning"}
+            size={10}
+            color={remaining >= 0 ? "#000" : "#fff"}
+          />
+          <Text
+            style={[
+              styles.balanceBadgeText,
+              { color: remaining >= 0 ? "#000" : "#fff" },
+            ]}
+          >
+            {salary > 0
+              ? `${((remaining / salary) * 100).toFixed(0)}% of salary left`
+              : "Set your income"}
           </Text>
         </View>
         <MiniChart expenses={filteredExpenses} savings={filteredSavings} />
@@ -325,7 +349,7 @@ export default function HomeScreen() {
               {fmt(salary)}
             </Text>
             <Text style={[styles.statVs, { color: colors.accent }]}>
-              +0% vs last month
+              {formatChange(incomeChangePct)}
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={16} color={colors.muted} />
@@ -356,7 +380,7 @@ export default function HomeScreen() {
               {fmt(totalExpense)}
             </Text>
             <Text style={[styles.statVs, { color: colors.danger }]}>
-              +0% vs last month
+              {formatChange(expenseChangePct)}
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={16} color={colors.muted} />
@@ -387,7 +411,7 @@ export default function HomeScreen() {
               {fmt(totalSaving)}
             </Text>
             <Text style={[styles.statVs, { color: colors.saving }]}>
-              +0% vs last month
+              {formatChange(savingChangePct)}
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={16} color={colors.muted} />
@@ -547,7 +571,7 @@ export default function HomeScreen() {
       {/* Modal Add Savings */}
       <Modal visible={savingsModal} transparent animationType="slide">
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={{ flex: 1 }}
         >
           <View style={styles.modalOverlay}>
@@ -666,7 +690,7 @@ export default function HomeScreen() {
       {/* Modal Add Income */}
       <Modal visible={incomeModal} transparent animationType="slide">
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={{ flex: 1 }}
         >
           <View style={styles.modalOverlay}>
@@ -802,7 +826,6 @@ const styles = StyleSheet.create({
   balanceBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#c8f542",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 999,
@@ -810,7 +833,7 @@ const styles = StyleSheet.create({
     gap: 4,
     zIndex: 2,
   },
-  balanceBadgeText: { fontFamily: font.bold, fontSize: 10, color: "#000" },
+  balanceBadgeText: { fontFamily: font.bold, fontSize: 10 },
   chartBg: { position: "absolute", bottom: 0, right: 0, zIndex: 1 },
   statsWrap: { gap: 10, marginBottom: 24 },
   statCard: {

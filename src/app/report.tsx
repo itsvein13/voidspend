@@ -1,7 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import {
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   ScrollView,
   Share,
   StyleSheet,
@@ -538,105 +540,119 @@ export default function ReportScreen() {
       </View>
 
       <Modal visible={budgetModal} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View
-            style={[
-              styles.modalBox,
-              { backgroundColor: colors.surface, borderColor: colors.border },
-            ]}
-          >
-            <Text style={[styles.modalTitle, { color: colors.text }]}>
-              {editingCategory ? "EDIT BUDGET" : "SET BUDGET"}
-            </Text>
-
-            <Text style={[styles.modalLabel, { color: colors.muted }]}>
-              CATEGORY
-            </Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.catScroll}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={{ flex: 1 }}
+        >
+          <View style={styles.modalOverlay}>
+            <View
+              style={[
+                styles.modalBox,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+              ]}
             >
-              {EXPENSE_CATEGORIES.map((cat) => (
-                <TouchableOpacity
-                  key={cat}
-                  disabled={!!editingCategory}
-                  style={[
-                    styles.catBtn,
-                    { borderColor: colors.border },
-                    budgetCategory === cat && {
-                      borderColor: colors.accent,
-                      backgroundColor: "rgba(200,245,66,0.1)",
-                    },
-                  ]}
-                  onPress={() => setBudgetCategory(cat)}
-                >
-                  <Text
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                {editingCategory ? "EDIT BUDGET" : "SET BUDGET"}
+              </Text>
+
+              <Text style={[styles.modalLabel, { color: colors.muted }]}>
+                CATEGORY
+              </Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.catScroll}
+              >
+                {EXPENSE_CATEGORIES.map((cat) => (
+                  <TouchableOpacity
+                    key={cat}
+                    disabled={!!editingCategory}
                     style={[
-                      styles.catText,
-                      {
-                        color:
-                          budgetCategory === cat ? colors.accent : colors.muted,
+                      styles.catBtn,
+                      { borderColor: colors.border },
+                      budgetCategory === cat && {
+                        borderColor: colors.accent,
+                        backgroundColor: "rgba(200,245,66,0.1)",
                       },
                     ]}
+                    onPress={() => setBudgetCategory(cat)}
                   >
-                    {cat}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+                    <Text
+                      style={[
+                        styles.catText,
+                        {
+                          color:
+                            budgetCategory === cat
+                              ? colors.accent
+                              : colors.muted,
+                        },
+                      ]}
+                    >
+                      {cat}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
 
-            <Text style={[styles.modalLabel, { color: colors.muted }]}>
-              MONTHLY LIMIT
-            </Text>
-            <TextInput
-              style={[
-                styles.modalInput,
-                {
-                  borderColor: colors.border,
-                  backgroundColor: colors.surface2,
-                  color: colors.text,
-                },
-              ]}
-              placeholder="0"
-              placeholderTextColor={colors.muted}
-              keyboardType="numeric"
-              value={budgetAmount}
-              onChangeText={(text) => setBudgetAmount(formatNumberInput(text))}
-            />
-
-            <TouchableOpacity
-              style={[styles.modalBtn, { backgroundColor: colors.accent }]}
-              onPress={handleSaveBudget}
-            >
-              <Text style={[styles.modalBtnText, { color: "#000" }]}>
-                SAVE BUDGET
+              <Text style={[styles.modalLabel, { color: colors.muted }]}>
+                MONTHLY LIMIT
               </Text>
-            </TouchableOpacity>
+              <TextInput
+                style={[
+                  styles.modalInput,
+                  {
+                    borderColor: colors.border,
+                    backgroundColor: colors.surface2,
+                    color: colors.text,
+                  },
+                ]}
+                placeholder="0"
+                placeholderTextColor={colors.muted}
+                keyboardType="numeric"
+                value={budgetAmount}
+                onChangeText={(text) =>
+                  setBudgetAmount(formatNumberInput(text))
+                }
+              />
 
-            {editingCategory && (
               <TouchableOpacity
-                style={[styles.deleteBudgetBtn, { borderColor: colors.danger }]}
-                onPress={handleDeleteBudget}
+                style={[styles.modalBtn, { backgroundColor: colors.accent }]}
+                onPress={handleSaveBudget}
               >
-                <Text
-                  style={[styles.deleteBudgetText, { color: colors.danger }]}
-                >
-                  DELETE BUDGET
+                <Text style={[styles.modalBtnText, { color: "#000" }]}>
+                  SAVE BUDGET
                 </Text>
               </TouchableOpacity>
-            )}
 
-            <TouchableOpacity
-              style={styles.cancelWrap}
-              onPress={() => setBudgetModal(false)}
-            >
-              <Text style={[styles.cancelBudgetText, { color: colors.muted }]}>
-                CANCEL
-              </Text>
-            </TouchableOpacity>
+              {editingCategory && (
+                <TouchableOpacity
+                  style={[
+                    styles.deleteBudgetBtn,
+                    { borderColor: colors.danger },
+                  ]}
+                  onPress={handleDeleteBudget}
+                >
+                  <Text
+                    style={[styles.deleteBudgetText, { color: colors.danger }]}
+                  >
+                    DELETE BUDGET
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              <TouchableOpacity
+                style={styles.cancelWrap}
+                onPress={() => setBudgetModal(false)}
+              >
+                <Text
+                  style={[styles.cancelBudgetText, { color: colors.muted }]}
+                >
+                  CANCEL
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </ScrollView>
   );
