@@ -2,63 +2,96 @@
 
 _track the drain._
 
-A personal finance tracker for people who want a fast way to see where their salary goes each month, without an account, a bank connection or a server holding their financial data. Everything stays on the phone.
+![Release](https://img.shields.io/github/v/release/itsvein13/voidspend?color=c8f542&labelColor=000000)
+![Platform](https://img.shields.io/badge/platform-Android-3DDC84?labelColor=000000)
+![Built with Expo](https://img.shields.io/badge/built%20with-Expo-ffffff?labelColor=000000)
+![Language](https://img.shields.io/badge/language-TypeScript-3178C6?labelColor=000000)
 
-![Platform](https://img.shields.io/badge/platform-Android-3DDC84)
-![Built with Expo](https://img.shields.io/badge/built%20with-Expo-000020)
-![Language](https://img.shields.io/badge/language-TypeScript-3178C6)
+VOIDSPEND shows where your salary goes each month. It needs no account, no bank connection and no server. Your records live in a database on your phone and nowhere else.
+
+Open the app and the first thing you see is a ring. It starts full on payday and drains as you spend. Next to it is the number that matters: how much you can spend each day until the next payday.
+
+**[Download the latest APK](https://github.com/itsvein13/voidspend/releases/latest)**
 
 ---
 
-## About
+## Why VOIDSPEND
 
-VOIDSPEND tracks one monthly salary: it comes in, spending and saving go out, and the home screen always shows how much is left. The "void ring" on Home is that number drawn as light around a void. It drains as you spend and changes color as the money runs low.
+Most expense trackers ask you to sign up, link a bank or send your spending to a server. VOIDSPEND does none of that. There is no login, no analytics and no network request of its own. If you delete the app, your data goes with it. If you want to keep it, one backup file holds everything.
 
-The brand is black and lime with a mascot, and the app is in Indonesian and English (it follows the phone, and can be switched in settings).
+It is built around one habit: write down what you spent, as it happens, in as few taps as possible. A calculator keypad, a category, and done.
 
-## What it does
+## What you can do
 
-- **Void ring home screen.** What is left this month, how much is safe to spend each day until payday, income, spent and saved, and the latest transactions.
-- **One add sheet.** Expenses and income on a calculator keypad, with category, merchant, note, payment method, a date and time that can be set or left unknown, and an optional place.
-- **Accurate time.** Every transaction stores the real moment, the phone's time zone and the local date, so a late-night coffee stays on its day after a trip.
-- **History.** Grouped by day with the time, search (title, merchant, note, place and tag), swipe to edit or delete, and Undo. Filters for type, wallet, category, dates, amount range, tag, receipt and place. On a wide window the picked transaction opens beside the list.
-- **Tags.** Up to eight short labels on any transaction, reused from earlier ones, renamed or deleted in one place.
-- **Recently deleted.** Deleted transactions are kept for 30 days and can be restored or removed for good.
-- **Wallets and transfers.** Cash, bank and e-wallet accounts with a starting balance (below zero for a credit card or a loan), what each one holds, and a transfer that moves money between them without touching income, spending or savings. A transfer can be edited, a recurring item can record into any wallet, and History and Insights can be narrowed to one wallet. The wallet pickers only appear once there is a second wallet.
-- **Goals.** Savings goals with deposits, withdrawals, target and progress. A withdrawal cannot take out more than the goal holds.
-- **Budgets.** A limit per category from a month on, with a warning when a save crosses it.
-- **Recurring items.** Salary and bills that are offered on their due day and recorded with one tap, into the wallet of your choice. Each can send a local reminder at 9:00 on its due day.
-- **Insights.** A month or a year, for all wallets or one: income, spent, saved, savings rate, change against the last period, a category donut that opens History, month bars, a spending calendar and top merchants.
-- **Receipt scanner.** Choose a photo, review every field and line, and save. Duplicates are flagged. See the limits below.
-- **Location, only on request.** Type a place, or read the device position once with a tap. Never automatic, never in the background, stored rounded to about 110 meters, and left out of exports unless ticked.
-- **Export and backup.** CSV and a PDF summary, and a JSON backup of everything that can be restored on any phone.
-- **App lock.** Optional: the phone's own fingerprint, PIN or pattern is asked when the app opens and after it has been away for a minute.
-- **Themes and accessibility.** Dark, light or follow the system. Reduced motion, haptics switch, labels on every control, and layouts that hold up at large system text. On a wide window the dock becomes a rail.
-- **Offline.** No account, no analytics, no network calls of its own.
+**Know what is left**
+- See what remains of this month's salary, and how much is safe to spend per day until payday.
+- Watch income, spending and savings side by side, with the latest transactions underneath.
 
-## What is not verified yet
+**Record fast, and record accurately**
+- Add an expense or an income on a calculator keypad, with category, merchant, note and payment method.
+- Every entry stores the real moment, the time zone and the local date. A coffee bought at 23:30 stays on its own day, even after you travel.
+- Attach up to eight tags per entry and reuse them later. Rename or delete a tag in one place.
+- Add a place by typing it, or let the phone read its position once with a tap. Location is never automatic and never read in the background.
 
-These parts are written and tested in code, but have not run on a real phone:
+**Scan receipts**
+- Pick a photo of a receipt and the app reads it on the device. Nothing is uploaded.
+- Check every field and every line, then save. Nothing is saved before you confirm.
+- Duplicate receipts are flagged before they are saved twice.
 
-- **The receipt text reader.** It is a small local Android module around Google ML Kit (`modules/receipt-scan`). It has never been compiled. Without a development build, the scanner shows the photo and lets you fill the fields yourself. The receipt parser is tested on made-up receipts only.
-- **A real location reading.** The emulator has no Google Play services, so only the typed place and the "not available" state were seen.
-- **Choosing a file to restore a backup**, **sharing the PDF** and **the camera** were not exercised on a device.
-- **Reminders.** The alarms were seen scheduled on the emulator, but a reminder appearing, the Android 13 permission prompt and the notification channel (Expo Go cannot create one) were not. There is no small notification icon yet.
-- Frame rate, cold start time and APK size were not measured.
+**Plan ahead**
+- Set savings goals with deposits, withdrawals, a target and progress.
+- Set a budget per category and get a warning when a save crosses the limit.
+- Add recurring items such as salary and bills. They are offered on the day they are due and recorded with one tap, with an optional reminder at 9:00.
 
-Each milestone's own notes in `docs/` list what was run and what was not.
+**Understand your spending**
+- Insights for a month or a year: income, spent, saved, savings rate and the change from the last period.
+- A category donut that opens the matching transactions, month bars, top merchants and a calendar that shades each day by how much you spent.
+- Search by title, merchant, note, place or tag, and filter by type, wallet, category, dates, amount, tag, receipt and place.
 
-## Tech stack
+**Keep more than one wallet**
+- Track cash, bank accounts and e-wallets, each with its own balance. A starting balance below zero works for a credit card or a loan.
+- Move money between wallets without changing income, spending or savings.
+- Narrow History and Insights to a single wallet.
 
-- [React Native](https://reactnative.dev/) 0.86 and [Expo](https://expo.dev/) SDK 57, React 19 with the React Compiler
-- [Expo Router](https://docs.expo.dev/router/introduction/) for navigation
-- `expo-sqlite` for storage, with SQL migrations and soft deletes. Money is whole rupiah.
-- Reanimated 4 and `react-native-svg` for motion and charts, with no chart library
-- `expo-location`, `expo-image-picker`, `expo-document-picker`, `expo-local-authentication`, `expo-notifications` (local reminders only), `expo-print`, `expo-sharing`, `expo-haptics`
-- Space Grotesk and Plus Jakarta Sans
-- Jest with Testing Library. Repository tests run real SQL on Node's built-in SQLite.
+**Stay in control of your data**
+- Export a CSV, share a PDF summary, or back up everything as one JSON file and restore it on any phone.
+- Deleted transactions stay for 30 days and can be restored.
+- Lock the app with the phone's own fingerprint, PIN or pattern.
+- Use it in Indonesian or English. It follows the phone and can be switched in settings.
+- Choose dark, light or system theme. Reduced motion, large text and screen readers are supported, and on a wide window the bottom bar becomes a side rail and History shows the list and the details together.
 
-## Getting started
+## Install
+
+1. On your Android phone, open the [latest release](https://github.com/itsvein13/voidspend/releases/latest) and download `voidspend-2.0.0.apk`.
+2. Open the file. When Android asks, allow installs from your browser or file manager.
+3. Open VOIDSPEND and follow the short setup: a nickname, your monthly salary and your payday. You can skip the salary and add it later from Home.
+
+The app needs a phone with a 64-bit ARM processor (arm64-v8a), which covers nearly all Android phones sold in recent years.
+
+If you used version 1, the first launch of version 2 imports your old data. It writes a backup file first and checks that the totals match before it finishes.
+
+## Privacy
+
+- Everything is stored in one SQLite database in the app's private storage.
+- The app makes no network requests of its own and has no analytics.
+- Receipt text is read on the device. Photos stay on the device.
+- Location is read only when you ask for it, and is stored rounded to about 110 meters. It is left out of exports unless you tick it.
+- Android can copy app data to your Google account with its own automatic backup. Check that setting on your phone if this matters to you.
+
+## Known limits
+
+- Android only. There is no iOS version.
+- A receipt reader is only as good as the receipt. Faded thermal paper may need corrections, which is why review comes before saving.
+- Receipt photos are not included in the backup file. The extracted fields are.
+- Reminders are sent at 9:00 on the due date. The time cannot be changed yet.
+
+Found a problem? Please [open an issue](https://github.com/itsvein13/voidspend/issues) and say what you did, what you expected and what happened.
+
+## Support the developer
+
+VOIDSPEND is free. If it helps you, you can support its development at [saweria.co/vein13](https://saweria.co/vein13). The same link is in the app under Settings.
+
+## Build from source
 
 ```bash
 git clone https://github.com/itsvein13/voidspend.git
@@ -67,7 +100,15 @@ npm install
 npx expo start --go
 ```
 
-Open the QR code in Expo Go on an Android phone, or press `a` with an emulator running. Everything works in Expo Go except the on-device receipt text reader, which needs a development build (`npx expo run:android` with the Android SDK, or an EAS development build). Expo Go also warns that the notifications module is only partly supported there, and cannot create the reminder channel; the reminders are still scheduled. To try the parts Expo Go cannot show on a real phone, see `docs/v2-phone-test.md`.
+Open the QR code in Expo Go on an Android phone, or press `a` with an emulator running. Everything works in Expo Go except the on-device receipt reader, which needs a development build. Expo Go also warns that the notifications module is only partly supported there, and it cannot create the reminder channel, though reminders are still scheduled.
+
+To build an installable APK with EAS:
+
+```bash
+eas build --platform android --profile apk
+```
+
+For a development build on a real phone, see `docs/v2-phone-test.md`.
 
 Checks:
 
@@ -78,16 +119,20 @@ npm test
 npx expo-doctor
 ```
 
-## Your data
+## Tech stack
 
-- Everything is in one SQLite database in the app's private storage.
-- The v1 data (AsyncStorage) is imported once on the first launch of v2, with a backup file written first and the totals checked against the old numbers.
-- "Back up data" writes one JSON file with every transaction, goal, budget and setting. Receipt photos are not included. "Restore from a backup" replaces everything on the phone with that file, after a typed confirmation, and changes nothing if the file is damaged.
-- Android may copy app data to your Google account with its own automatic backup. Check that setting if that matters to you.
+- [React Native](https://reactnative.dev/) 0.86 and [Expo](https://expo.dev/) SDK 57, React 19 with the React Compiler
+- [Expo Router](https://docs.expo.dev/router/introduction/) for navigation
+- `expo-sqlite` for storage, with SQL migrations and soft deletes. Money is stored in whole rupiah.
+- Reanimated 4 and `react-native-svg` for motion and charts, with no chart library
+- A small local Expo module around Google ML Kit text recognition (`modules/receipt-scan`)
+- `expo-location`, `expo-image-picker`, `expo-document-picker`, `expo-local-authentication`, `expo-notifications` (local reminders only), `expo-print`, `expo-sharing`, `expo-haptics`
+- Space Grotesk and Plus Jakarta Sans
+- Jest with Testing Library. Repository tests run real SQL on Node's built-in SQLite.
 
-## Design notes
+## Design
 
-The identity grows from the app icon: a V falling into a ring. Lime is for the main action and for money left, blue for savings, red only for problems, amber for a limit that is close. Spending is shown in neutral text with a minus sign, so red keeps its meaning. Docs for each milestone, with the decisions and their reasons, are in `docs/`.
+The identity grows from the app icon: a V falling into a ring. Lime marks the main action and money that is left, blue marks savings, red appears only for problems, and amber means a limit is close. Spending is shown in neutral text with a minus sign, so red keeps its meaning. Notes on every milestone, with the decisions and the reasons for them, are in `docs/`.
 
 ## Author
 
