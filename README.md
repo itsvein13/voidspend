@@ -15,6 +15,20 @@ Open the app and the first thing you see is a ring. It starts full on payday and
 
 ---
 
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/home.png" width="190" alt="Home: the void ring shows what is left this month and how much is safe to spend each day">
+  <img src="docs/screenshots/record.png" width="190" alt="Recording an expense on a calculator keypad">
+  <img src="docs/screenshots/history.png" width="190" alt="History grouped by day, with search and filters">
+  <img src="docs/screenshots/insights.png" width="190" alt="Insights: spending by category">
+  <img src="docs/screenshots/goals.png" width="190" alt="Savings goals with progress">
+</p>
+
+_Sample data. From left to right: Home, recording an expense, History, Insights and Goals._
+
+---
+
 ## Why VOIDSPEND
 
 Most expense trackers ask you to sign up, link a bank or send your spending to a server. VOIDSPEND does none of that. There is no login, no analytics and no network request of its own. If you delete the app, your data goes with it. If you want to keep it, one backup file holds everything.
