@@ -1,118 +1,83 @@
 import {
+  PlusJakartaSans_400Regular,
+  PlusJakartaSans_500Medium,
+  PlusJakartaSans_600SemiBold,
+  PlusJakartaSans_700Bold,
+} from "@expo-google-fonts/plus-jakarta-sans";
+import {
   SpaceGrotesk_400Regular,
   SpaceGrotesk_600SemiBold,
   SpaceGrotesk_700Bold,
   useFonts,
 } from "@expo-google-fonts/space-grotesk";
-import { Ionicons } from "@expo/vector-icons";
-import { Tabs, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect, useState } from "react";
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
-import SplashScreenCustom from "../components/SplashScreenCustom";
-import { FinanceProvider } from "../context/FinanceContext";
-import { ThemeProvider, useTheme } from "../context/ThemeContext";
-import { UserProvider, useUser } from "../context/UserContext";
+import { useEffect } from "react";
+import { StyleSheet } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
+import { DatabaseProvider } from "@/db/DatabaseProvider";
+import { DesignProvider, Screen, Text, useTheme } from "@/design";
+import { AppLock } from "@/features/lock/AppLock";
+import { AppGate } from "@/features/shell/AppGate";
+import { DOCK_SPACE } from "@/features/shell/Dock";
+import { SplashGate, SplashView } from "@/features/shell/Splash";
 
 SplashScreen.preventAutoHideAsync();
 
-function TabsLayout() {
-  const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
+// Sheets slide up over the tabs as full-screen modals. Native form sheets (a partial height with the screen
+// behind visible) did not open under Expo Go on Android 11, so they wait for a development build.
+const sheet = { presentation: "modal", animation: "slide_from_bottom" } as const;
 
+function AppStack() {
+  const { color } = useTheme();
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          backgroundColor: colors.bg,
-          borderTopColor: colors.border,
-          borderTopWidth: 1,
-          height: 60 + insets.bottom,
-          paddingBottom: insets.bottom,
-        },
-        tabBarActiveTintColor: colors.accent,
-        tabBarInactiveTintColor: colors.muted,
-        tabBarLabelStyle: {
-          fontFamily: "SpaceGrotesk_600SemiBold",
-          fontSize: 10,
-          letterSpacing: 0.5,
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="home-outline" size={22} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="history"
-        options={{
-          title: "History",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="time-outline" size={22} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="report"
-        options={{
-          title: "Report",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="bar-chart-outline" size={22} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="person-outline" size={22} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen name="explore" options={{ href: null }} />
-      <Tabs.Screen name="onboarding" options={{ href: null }} />
-      <Tabs.Screen name="setup" options={{ href: null }} />
-      <Tabs.Screen name="pengeluaran" options={{ href: null }} />
-      <Tabs.Screen name="tabungan" options={{ href: null }} />
-    </Tabs>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.canvas } }}>
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="add" options={sheet} />
+      <Stack.Screen name="transaction/[id]" options={sheet} />
+      <Stack.Screen name="salary" options={sheet} />
+      <Stack.Screen name="settings" options={sheet} />
+      <Stack.Screen name="goal/[id]" options={sheet} />
+      <Stack.Screen name="goal-edit" options={sheet} />
+      <Stack.Screen name="budgets" options={sheet} />
+      <Stack.Screen name="budget-edit" options={sheet} />
+      <Stack.Screen name="categories" options={sheet} />
+      <Stack.Screen name="recurring" options={sheet} />
+      <Stack.Screen name="reset" options={sheet} />
+      <Stack.Screen name="deleted" options={sheet} />
+      <Stack.Screen name="wallets" options={sheet} />
+      <Stack.Screen name="wallet-edit" options={sheet} />
+      <Stack.Screen name="transfer" options={sheet} />
+      <Stack.Screen name="tags" options={sheet} />
+      <Stack.Screen name="restore" options={sheet} />
+      <Stack.Screen name="scan" options={sheet} />
+      <Stack.Screen name="receipt/[id]" options={sheet} />
+    </Stack>
   );
 }
 
-function AppNavigator() {
-  const { hasOnboarded, isLoaded } = useUser();
-  const [showSplash, setShowSplash] = useState(true);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!showSplash && isLoaded) {
-      if (!hasOnboarded) {
-        router.replace("/onboarding");
-      }
-    }
-  }, [showSplash, isLoaded, hasOnboarded]);
-
-  if (showSplash) {
-    return <SplashScreenCustom onFinish={() => setShowSplash(false)} />;
-  }
-
-  return <TabsLayout />;
+function FatalError({ error }: { error: Error }) {
+  return (
+    <Screen>
+      <Text variant="title" accessibilityRole="header">
+        VOIDSPEND
+      </Text>
+      <Text variant="body" tone="danger">{`The database could not be opened: ${error.message}`}</Text>
+    </Screen>
+  );
 }
 
-export default function Layout() {
+export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     SpaceGrotesk_400Regular,
     SpaceGrotesk_600SemiBold,
     SpaceGrotesk_700Bold,
+    PlusJakartaSans_400Regular,
+    PlusJakartaSans_500Medium,
+    PlusJakartaSans_600SemiBold,
+    PlusJakartaSans_700Bold,
   });
 
   useEffect(() => {
@@ -123,13 +88,23 @@ export default function Layout() {
 
   return (
     <SafeAreaProvider>
-      <ThemeProvider>
-        <UserProvider>
-          <FinanceProvider>
-            <AppNavigator />
-          </FinanceProvider>
-        </UserProvider>
-      </ThemeProvider>
+      <GestureHandlerRootView style={styles.root}>
+        <DesignProvider snackbarOffset={DOCK_SPACE - 16}>
+          <AppLock>
+            <DatabaseProvider loading={<SplashView />} renderError={(error) => <FatalError error={error} />}>
+              <SplashGate>
+                <AppGate>
+                  <AppStack />
+                </AppGate>
+              </SplashGate>
+            </DatabaseProvider>
+          </AppLock>
+        </DesignProvider>
+      </GestureHandlerRootView>
     </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  root: { flex: 1 },
+});
