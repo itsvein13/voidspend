@@ -66,7 +66,7 @@ It is built around one habit: write down what you spent, as it happens, in as fe
 2. Open the file. When Android asks, allow installs from your browser or file manager.
 3. Open VOIDSPEND and follow the short setup: a nickname, your monthly salary and your payday. You can skip the salary and add it later from Home.
 
-The app needs a phone with a 64-bit ARM processor (arm64-v8a), which covers nearly all Android phones sold in recent years.
+The app needs Android 7.0 or newer and a phone with a 64-bit ARM processor (arm64-v8a), which covers nearly all Android phones sold in recent years. It does not run on 32-bit phones or on x86 emulators.
 
 If you used version 1, the first launch of version 2 imports your old data. It writes a backup file first and checks that the totals match before it finishes.
 
