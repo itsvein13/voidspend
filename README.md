@@ -18,15 +18,18 @@ Open the app and the first thing you see is a ring. It starts full on payday and
 ## Screenshots
 
 <p align="center">
-  <img src="docs/screenshots/home.png" width="190" alt="Home: the void ring shows what is left this month and how much is safe to spend each day">
-  <img src="docs/screenshots/record.png" width="190" alt="Recording an expense on a calculator keypad">
-  <img src="docs/screenshots/history.png" width="190" alt="History grouped by day, with search and filters">
-  <img src="docs/screenshots/insights.png" width="190" alt="Insights: spending by category">
-  <img src="docs/screenshots/goals.png" width="190" alt="Savings goals with progress">
+  <img src="docs/screenshots/home.png" width="230" alt="Home: the void ring shows what is left this month and how much is safe to spend each day">
+  <img src="docs/screenshots/record.png" width="230" alt="Recording an expense on a calculator keypad">
+  <img src="docs/screenshots/history.png" width="230" alt="History grouped by day, with search and filters">
+  <img src="docs/screenshots/insights.png" width="230" alt="Insights: spending by category">
+</p>
+<p align="center">
+  <img src="docs/screenshots/goals.png" width="230" alt="Savings goals with progress">
+  <img src="docs/screenshots/receipt-review.png" width="230" alt="Reviewing a receipt before it is saved">
+  <img src="docs/screenshots/home-light.png" width="230" alt="Home in the light theme">
 </p>
 
-_Sample data. From left to right: Home, recording an expense, History, Insights and Goals._
-
+_Sample data. Top row: Home, recording an expense, History and Insights. Bottom row: Goals, reviewing a receipt before it is saved, and the light theme._
 ---
 
 ## Why VOIDSPEND
